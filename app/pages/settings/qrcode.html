@@ -1,0 +1,22 @@
+
+<ion-toolbar>
+  <ion-title>
+    My QR Code
+  </ion-title>
+  <ion-buttons start>
+    <button (click)="dismiss()">
+      <span primary showWhen="ios">Cancel</span>
+      <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+    </button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+  <ion-card>
+    <ion-list>
+    <ion-item>
+      <qrcode [usesvg]="true" [qrdata]="'34404004003434'" [size]="256" [level]="'H'"></qrcode>
+    </ion-item>
+  </ion-list>
+  </ion-card>
+</ion-content>

@@ -1,0 +1,30 @@
+<!--
+  Generated template for the OutPatientDetailPage page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-navbar *navbar primary>
+  <ion-title>รายละเอียด</ion-title>
+</ion-navbar>
+
+<ion-toolbar>
+  <ion-segment [(ngModel)]="pet">
+      <ion-segment-button value="cc">
+        คัดกรอง
+      </ion-segment-button>
+      <ion-segment-button value="diag">
+        วินิจฉัยโรค
+      </ion-segment-button>
+      <ion-segment-button value="procedure">
+        หัตถการ
+      </ion-segment-button>
+      <ion-segment-button value="pharmacy">
+        ยา
+      </ion-segment-button>
+    </ion-segment>
+
+</ion-toolbar>
+<ion-content padding class="out-patient-detail">
+  
+</ion-content>
