@@ -6,10 +6,11 @@ import * as moment from 'moment';
 import { TabsPage } from '../tabs/tabs';
 import { Login } from '../../providers/login/login';
 import { Configure } from '../../providers/configure/configure';
+import {Encrypt} from '../../providers/encrypt/encrypt';
 
 @Component({
   templateUrl: 'build/pages/login/login.html',
-  providers: [Login, Configure, JwtHelper]
+  providers: [Login, Configure, JwtHelper, Encrypt]
 })
 
 export class LoginPage {
@@ -24,7 +25,8 @@ export class LoginPage {
     private nav: NavController,
     private menu: MenuController,
     private config: Configure,
-    private jwtHelper: JwtHelper
+    private jwtHelper: JwtHelper,
+    private encrypt: Encrypt
   ) {
     this.menu.enable(false, 'loggedInMenu');
     this.jwtHelper = new JwtHelper();   
@@ -48,8 +50,8 @@ export class LoginPage {
     });
     
     this.nav.present(loading);
-
-    this.LoginService.login(url, this.username, this.password)
+    let params = this.encrypt.encrypt({ username: this.username, password: this.password });
+    this.LoginService.login(url, params)
       .then(data => {
         if (data.ok) {
           this.token = data.token;

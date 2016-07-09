@@ -25,28 +25,28 @@ export class TabsPage {
 
   constructor(public nav: NavController) {
 
-    this.localStorage = new Storage(LocalStorage);
+    // this.localStorage = new Storage(LocalStorage);
     
-    try {
-      this.localStorage.get('patient')
-        .then(patient => {
-          let _patient = JSON.parse(patient);
-          if (!_patient) {
-            let toast = Toast.create({
-              message: 'กรุณากำหนดค่าเริ่มต้นสำหรับผู้ป่วย',
-              duration: 3000,
-              position: 'top'
-            });
-            // this.tabs.select(3);
-            this.nav.present(toast);
+    // try {
+    //   this.localStorage.get('patient')
+    //     .then(patient => {
+    //       let _patient = JSON.parse(patient);
+    //       if (!_patient) {
+    //         let toast = Toast.create({
+    //           message: 'กรุณากำหนดค่าเริ่มต้นสำหรับผู้ป่วย',
+    //           duration: 3000,
+    //           position: 'top'
+    //         });
+    //         // this.tabs.select(3);
+    //         this.nav.present(toast);
            
-          } else {
+    //       } else {
           
-          }
-        });
-    } catch (err) {
-      console.log('Error: ' + JSON.stringify(err));
-    }
+    //       }
+    //     });
+    // } catch (err) {
+    //   console.log('Error: ' + JSON.stringify(err));
+    // }
 
   }
 

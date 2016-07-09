@@ -29,29 +29,30 @@
 
     <ion-item *ngFor="#p of patients">
       <ion-thumbnail item-left>
-        <img src="img/avatar-cher.png">
+        <img src="img/avatar-cher.png" *ngIf="!p.image">
+        <img [src]="p.image" *ngIf="p.image">
       </ion-thumbnail>
-      <h2>{{p.pname}} {{ p.fname }} {{ p.lname }}</h2>
+      <h2>{{p.ptname }}</h2>
       <p>อายุ {{ p.age }} ปี</p>
           <ion-row>
       <ion-col>
-        <button primary clear (click)="showTakePhotoAction(p.hn)">
+        <button primary clear (click)="showTakePhotoAction(p.patient_hn)">
           <ion-icon name="camera"></ion-icon>
           <div>รูปภาพ</div>
         </button>
       </ion-col>
       <ion-col>
-        <button primary clear (click)="setDefault(p.hn)">
+        <button primary [disabled]="p.is_default == 'Y'" clear (click)="setDefault(p.patient_hn)">
           <ion-icon name="bookmarks"></ion-icon>
           <div>เริ่มต้น</div>
         </button>
       </ion-col>
-      <ion-col>
+      <!--<ion-col>
         <button danger clear>
           <ion-icon name="trash"></ion-icon>
           <div>ลบ</div>
         </button>
-      </ion-col>
+      </ion-col>-->
     </ion-row>
     </ion-item>
 </ion-list>

@@ -29,5 +29,10 @@ export class Encrypt {
     return decrypt;
   }
 
+  encrypt(data: Object) {
+    let encrypted = cryptojs.AES.encrypt(JSON.stringify(data), this.secretKey);
+    return encrypted.toString();
+  }
+
 }
 
