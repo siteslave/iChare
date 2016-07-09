@@ -87,6 +87,15 @@ export class SettingsPage implements OnInit {
     }
 	  
   }  
+
+  setDefault(hn) {
+    console.log(hn);
+    let idx = _.findIndex(this.patients, { hn: hn });
+    if (idx > -1) {
+      this.localStorage.set('patient', JSON.stringify(this.patients[idx]));
+      console.log(this.patients[idx]);
+    }
+  }
   
   // show action sheet
   showTakePhotoAction() {

@@ -35,13 +35,13 @@
       <p>อายุ {{ p.age }} ปี</p>
           <ion-row>
       <ion-col>
-        <button primary clear (click)="showTakePhotoAction()">
+        <button primary clear (click)="showTakePhotoAction(p.hn)">
           <ion-icon name="camera"></ion-icon>
           <div>รูปภาพ</div>
         </button>
       </ion-col>
       <ion-col>
-        <button primary clear>
+        <button primary clear (click)="setDefault(p.hn)">
           <ion-icon name="bookmarks"></ion-icon>
           <div>เริ่มต้น</div>
         </button>
