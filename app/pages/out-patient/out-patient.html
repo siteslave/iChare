@@ -4,9 +4,11 @@
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-navbar *navbar primary>
-  <ion-title>บริการผู้ป่วยนอก (OPD)</ion-title>
-</ion-navbar>
+<ion-header>
+  <ion-navbar primary>
+    <ion-title>บริการผู้ป่วยนอก (OPD)</ion-title>
+  </ion-navbar>
+</ion-header>
 
 <ion-content class="out-patient">
   <ion-refresher (ionRefresh)="doRefresh($event)">
@@ -26,13 +28,13 @@
           <h2>ผู้ป่วยอุบัติเหตุและฉุกเฉิน (ER)</h2>
           <p>ปวดท้องอย่างรุนแรง, อาเจียน</p>
           <ion-note item-right>23.30 น.</ion-note>
-          <ion-icon item-right name="arrow-forward" light></ion-icon>
+          <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         </button>
         <button ion-item>
           <h2>แผนกทันตกรรม</h2>
           <p>ตรวจฟัน</p>
           <ion-note item-right>15.00 น.</ion-note>
-          <ion-icon item-right name="arrow-forward" light></ion-icon>
+          <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         </button>
       </ion-list>
   </ion-card>
@@ -46,7 +48,7 @@
           <h2>แผนกผู้ป่วยนอก</h2>
           <p>อาเจียน, ปวดท้องด้านขวา</p>
           <ion-note item-right>10.30 น.</ion-note>
-          <ion-icon item-right name="arrow-forward" light></ion-icon>
+          <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         </button>
       </ion-list>
   </ion-card>

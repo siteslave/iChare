@@ -1,16 +1,17 @@
 import {Component} from "@angular/core";
-import {Platform, ionicBootstrap} from 'ionic-angular';
+import {Platform, ionicBootstrap, MenuController, Events} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
-import {TabsPage} from './pages/tabs/tabs';
-
+import {LoginPage} from './pages/login/login';
 
 @Component({
   templateUrl: 'build/app.html'
 })
 export class MyApp {
-  rootPage: any = TabsPage;
+  //rootPage: any = TabsPage;
+  
+  rootPage: any = LoginPage;
 
-  constructor(platform: Platform) {
+  constructor(platform: Platform, public events: Events) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -20,6 +21,17 @@ export class MyApp {
       // StatusBar.styleDefault();
     });
   }
+
+  menuOpened() {
+    console.log('Menu open');
+  }
 }
 
-ionicBootstrap(MyApp);
+ionicBootstrap(MyApp, [], {
+  menuType: 'push',
+    platforms: {
+      ios: {
+        menuType: 'overlay',
+      }
+  }
+});

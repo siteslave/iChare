@@ -1,7 +1,9 @@
 import {Component} from '@angular/core';
-import {NavController} from 'ionic-angular';
+import {NavController, Storage, LocalStorage} from 'ionic-angular';
+import {Platform} from 'ionic-angular';
 
 import {OutPatientPage} from '../out-patient/out-patient';
+import {SettingsPage} from '../settings/settings';
 
 /*
   Generated class for the HomePage page.
@@ -13,7 +15,14 @@ import {OutPatientPage} from '../out-patient/out-patient';
   templateUrl: 'build/pages/home/home.html',
 })
 export class HomePage {
-  constructor(public nav: NavController) { }
+  localStorage: any;
+  isAndroid: boolean = false;
+  patientHn: any;
+
+
+  constructor(public nav: NavController, platform: Platform) {
+    this.isAndroid = platform.is('android');
+  }
   
   goOutPatient() {
       this.nav.push(OutPatientPage)

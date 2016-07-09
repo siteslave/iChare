@@ -4,124 +4,78 @@
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-navbar *navbar primary>
-  <button menuToggle>
-    <ion-icon name="menu"></ion-icon>
-  </button>
-  <ion-title>Tools</ion-title>
-</ion-navbar>
+<ion-header>
+  <ion-navbar primary>
+    <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Settings</ion-title>
+  </ion-navbar>
+</ion-header>
 
 <ion-content class="settings">
-  
-  <ion-card>
-    <ion-list no-border no-lines>
 
-    <ion-list-header>
-     <ion-icon name="qr-scanner" primary></ion-icon>
-     &nbsp; My QRCode
-    </ion-list-header>
-    
-    <button ion-item (click)="openModal()">
+<ion-list>
+  <ion-list-header>
+    ผู้ป่วยในความดูแล
+  </ion-list-header>
+
+  <!--<ion-item>
+      <ion-label>ผู้ป่วยในความดูแล</ion-label>
+      <ion-select (ionChange)="selectPatient()" [(ngModel)]="selectedPatient">
+        <ion-option *ngFor="#p of patients" [value]="p.hn">{{p.pname}} {{ p.fname }} {{ p.lname }}</ion-option>
+      </ion-select>
+    </ion-item>-->
+
+    <ion-item *ngFor="#p of patients">
       <ion-thumbnail item-left>
-        <qrcode [usesvg]="true" [qrdata]="'34404004003434'" [size]="64" [level]="'H'"></qrcode>
+        <img src="img/avatar-cher.png">
       </ion-thumbnail>
-       <h2>ID Card</h2>
-       <p>รหัสอ้างอิงประจำตัวผู้ป่วย</p>
-      
-    </button>
-    <ion-list-header>
-      Settings
-    </ion-list-header>
-    <ion-item>
-      <ion-icon name='planet' item-left></ion-icon>
-      Astronomy
-      <ion-note item-right>
-      To the moon
-      </ion-note>
+      <h2>{{p.pname}} {{ p.fname }} {{ p.lname }}</h2>
+      <p>อายุ {{ p.age }} ปี</p>
+          <ion-row>
+      <ion-col>
+        <button primary clear (click)="showTakePhotoAction()">
+          <ion-icon name="camera"></ion-icon>
+          <div>รูปภาพ</div>
+        </button>
+      </ion-col>
+      <ion-col>
+        <button primary clear>
+          <ion-icon name="bookmarks"></ion-icon>
+          <div>เริ่มต้น</div>
+        </button>
+      </ion-col>
+      <ion-col>
+        <button danger clear>
+          <ion-icon name="trash"></ion-icon>
+          <div>ลบ</div>
+        </button>
+      </ion-col>
+    </ion-row>
     </ion-item>
+</ion-list>
 
-    <ion-item>
-      <ion-toggle checked="false"></ion-toggle>
-      <ion-label>
-        Muggle Studies
-      </ion-label>
-      <ion-icon name='body' item-left></ion-icon>
-    </ion-item>
+<ion-list>
+  <ion-list-header>
+    <!--<ion-icon name="settings" primary itme-left></ion-icon>-->
+    ตั้งค่าการใช้งาน
+  </ion-list-header>
+  <ion-item>
+        <ion-toggle checked="true"></ion-toggle>
+        <ion-label>
+          ตรวจสอบข้อมูลนัดอัตโนมัติ
+        </ion-label>
+        <ion-icon name='calendar' item-left></ion-icon>
+      </ion-item>
 
-    <ion-item>
-      <ion-icon name='leaf' item-left></ion-icon>
-      Herbology
-      <ion-icon name='rose' item-right secondary></ion-icon>
-    </ion-item>
+      <ion-item>
+        <ion-toggle checked="false"></ion-toggle>
+        <ion-label>
+          ล๊อกอินอัตโนมัติ
+        </ion-label>
+        <ion-icon name='key' item-left></ion-icon>
+      </ion-item>
+</ion-list>
 
-    <ion-item>
-      <ion-icon name='flask' item-left></ion-icon>
-      Potions
-      <ion-note item-right>
-      Poisonous
-      </ion-note>
-    </ion-item>
-
-
-
-  </ion-list>
-
-
-  <ion-list>
-
-    <ion-list-header>
-      Activities
-    </ion-list-header>
-
-    <ion-item>
-      Incantation
-      <ion-icon name='color-wand' item-left></ion-icon>
-      <ion-note item-right>Crucio!</ion-note>
-    </ion-item>
-
-    <ion-item>
-      <ion-toggle checked="true"></ion-toggle>
-      <ion-label>
-        Quidditch Practice
-      </ion-label>
-      <ion-icon name='brush' item-left></ion-icon>
-    </ion-item>
-
-
-    <ion-item>
-      <ion-icon name='wine' item-left></ion-icon>
-      Mead Drinking
-      <ion-note item-right>Yes please</ion-note>
-    </ion-item>
-
-
-  </ion-list>
-
-  <ion-list>
-
-    <ion-list-header>
-      Friends
-    </ion-list-header>
-
-    <ion-item>
-      <ion-icon name='flash' item-left></ion-icon>
-      Harry
-      <ion-note item-right>The boy who lived</ion-note>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name='book' item-left></ion-icon>
-      Hermoine
-      <ion-note item-right>Muggle-born</ion-note>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name='beer' item-left></ion-icon>
-      Ron
-      <ion-note item-right>Brilliant!</ion-note>
-    </ion-item>
-
-
-  </ion-list>
-  </ion-card>
 </ion-content>

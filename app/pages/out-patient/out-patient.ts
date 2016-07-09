@@ -1,5 +1,7 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
+import {Platform} from 'ionic-angular';
+
 import {OutPatientDetailPage} from '../out-patient-detail/out-patient-detail';
 /*
   Generated class for the OutPatientPage page.
@@ -11,8 +13,11 @@ import {OutPatientDetailPage} from '../out-patient-detail/out-patient-detail';
   templateUrl: 'build/pages/out-patient/out-patient.html',
 })
 export class OutPatientPage {
-  constructor(public nav: NavController) { }
-  
+  isAndroid: boolean = false;
+  constructor(public nav: NavController, platform: Platform) {
+    this.isAndroid = platform.is('android');
+  }
+
   gotoDetail() {
     this.nav.push(OutPatientDetailPage)
   }
@@ -24,6 +29,6 @@ export class OutPatientPage {
       console.log('Async operation has ended');
       refresher.complete();
     }, 2000);
-  
+
   }
 }
