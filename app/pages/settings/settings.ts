@@ -65,7 +65,7 @@ export class SettingsPage implements OnInit {
     this.localStorage.get('token')
       .then(token => {
         this.token = token;
-        let url = `${this.url}/api/v1/patient/members?token=${this.token}`;
+        let url = `${this.url}/api/patient/members?token=${this.token}`;
         return this.settings.getMemberPatients(url);
       })
       .then(data => {
@@ -78,6 +78,19 @@ export class SettingsPage implements OnInit {
         this.patients = jsonData;
 
         loading.dismiss();
+      }, err => {
+        let msg = null;
+        if (err) {
+          msg = `Error [${err.status}]: ${err.statusText} `;
+        } else {
+          msg = 'Connection failed';
+        }
+        let alert = Alert.create({
+          title: 'เกิดข้อผิดพลาด',
+          subTitle: msg,
+          buttons: ['ตกลง']
+        });
+          this.nav.present(alert);
       });
   }
 
@@ -98,7 +111,7 @@ export class SettingsPage implements OnInit {
     this.nav.present(loading);
     
     let secretKey = this.config.getSecretKey();
-    let url = `${this.url}/api/v1/patient/set-default`;
+    let url = `${this.url}/api/patient/set-default`;
     let params = this.encrypt.encrypt({ hn: hn });
 
     this.settings.setDefault(url, this.token, params)
@@ -116,6 +129,14 @@ export class SettingsPage implements OnInit {
           this.nav.present(alert);
           console.log(data.msg);
         }
+      }, err => {
+        loading.dismiss();
+        let alert = Alert.create({
+          title: 'เกิดข้อผิดพลาด',
+          subTitle: `Error [${err.status}]: ${err.statusText} `,
+          buttons: ['ตกลง']
+        });
+        this.nav.present(alert);
       });
   }
 
@@ -218,7 +239,7 @@ export class SettingsPage implements OnInit {
 
     let params = this.encrypt.encrypt({ image: image, hn: hn });
     
-    let url = `${this.url}/api/v1/patient/save-photo`;
+    let url = `${this.url}/api/patient/save-photo`;
     this.settings.savePhoto(url, this.token, params)
       .then(data => {
         if (data.ok) {

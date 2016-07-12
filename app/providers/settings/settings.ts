@@ -19,18 +19,18 @@ export class Settings {
 
   getMemberPatients(url) {
     this.url = url;
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
 
       this.http.get(url)
         .map(res => res.json())
-        .subscribe(data => resolve(data))
+        .subscribe(data => resolve(data), error => reject(error))
     })
   }
 
   setDefault(url, token, params) {
     this.url = url;
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
 
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
@@ -39,14 +39,14 @@ export class Settings {
 
       this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data))
+        .subscribe(data => resolve(data), error => reject(error))
     });
   }
 
   savePhoto(url, token, params) {
     this.url = url;
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
 
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
@@ -55,7 +55,7 @@ export class Settings {
 
       this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data))
+        .subscribe(data => resolve(data), error => reject(error))
     })
   }
 

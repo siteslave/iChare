@@ -9,7 +9,7 @@
     <button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Settings</ion-title>
+    <ion-title>ตั้งค่าใช้งาน</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -63,19 +63,27 @@
     ตั้งค่าการใช้งาน
   </ion-list-header>
   <ion-item>
-        <ion-toggle checked="true"></ion-toggle>
+        <ion-toggle checked="true" primary></ion-toggle>
         <ion-label>
-          ตรวจสอบข้อมูลนัดอัตโนมัติ
+          แจ้งเตือนนัดหมาย
         </ion-label>
         <ion-icon name='calendar' item-left></ion-icon>
       </ion-item>
 
       <ion-item>
-        <ion-toggle checked="false"></ion-toggle>
+        <ion-toggle checked="true" green></ion-toggle>
         <ion-label>
-          ล๊อกอินอัตโนมัติ
+          แจ้งเตือนการเข้ารับบริการ
         </ion-label>
-        <ion-icon name='key' item-left></ion-icon>
+        <ion-icon name='alarm' item-left></ion-icon>
+      </ion-item>
+
+      <ion-item>
+        <ion-toggle checked="false" danger></ion-toggle>
+        <ion-label>
+          รับข่าวสารจากทางโรงพยาบาล
+        </ion-label>
+        <ion-icon name='chatbubbles' item-left></ion-icon>
       </ion-item>
 </ion-list>
 

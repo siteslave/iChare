@@ -14,7 +14,7 @@ export class Configure {
   secretKey: string;
 
   constructor() {
-    this.url = `http://192.168.200.91:3000`;
+    this.url = `http://192.168.200.70:3000`;
     this.secretKey = '9336bff7d152422e5ca53599bc129142';
   }
 
@@ -23,7 +23,7 @@ export class Configure {
   }
 
   getSecretKey() {
-    return this.secretKey;
+      return this.secretKey;
   }
   
 }
