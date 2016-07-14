@@ -65,7 +65,11 @@ export class LoginPage {
           this.localStorage.set('token', this.token);
           this.localStorage.set('fullname', decodeToken.fullname);
           this.localStorage.set('memberId', decodeToken.memberId);
+
+          loading.dismiss();
+          this.nav.push(TabsPage);
           
+         /* 
           let push = Push.init({
             android: {
               senderID: "238355712119"
@@ -107,7 +111,7 @@ export class LoginPage {
                   this.nav.present(alert);
               });
           });
-
+          */
         } else {
           //
           let alert = Alert.create({
