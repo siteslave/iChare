@@ -36,15 +36,21 @@
       <p>อายุ {{ p.age }} ปี</p>
           <ion-row>
       <ion-col>
-        <button primary clear (click)="showTakePhotoAction(p.patient_hn)">
+        <button primary clear (click)="showTakePhotoAction(p.hask_key)">
           <ion-icon name="camera"></ion-icon>
           <div>รูปภาพ</div>
         </button>
       </ion-col>
       <ion-col>
-        <button primary [disabled]="p.is_default == 'Y'" clear (click)="setDefault(p.patient_hn)">
+        <button primary [disabled]="p.is_default == 'Y'" clear (click)="setDefault(p.hash_key)">
           <ion-icon name="bookmarks"></ion-icon>
           <div>เริ่มต้น</div>
+        </button>
+      </ion-col>
+      <ion-col>
+        <button primary clear (click)="getBarcode(p.hash_key)">
+          <ion-icon name="barcode"></ion-icon>
+          <div>บาร์โค้ด</div>
         </button>
       </ion-col>
       <!--<ion-col>
@@ -63,7 +69,7 @@
     ตั้งค่าการใช้งาน
   </ion-list-header>
   <ion-item>
-        <ion-toggle checked="true" primary></ion-toggle>
+        <ion-toggle checked="true" [(ngModel)]="alertAppoint" (ionChange)="toggleAppoint()" primary></ion-toggle>
         <ion-label>
           แจ้งเตือนนัดหมาย
         </ion-label>
@@ -71,7 +77,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-toggle checked="true" green></ion-toggle>
+        <ion-toggle checked="true" [(ngModel)]="alertService" (ionChange)="toggleService()" green></ion-toggle>
         <ion-label>
           แจ้งเตือนการเข้ารับบริการ
         </ion-label>
@@ -79,7 +85,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-toggle checked="false" danger></ion-toggle>
+        <ion-toggle checked="false" [(ngModel)]="alertNews" (ionChange)="toggleNews()" danger></ion-toggle>
         <ion-label>
           รับข่าวสารจากทางโรงพยาบาล
         </ion-label>

@@ -1,7 +1,7 @@
 
 <ion-toolbar>
   <ion-title>
-    My QR Code
+    My Bar Code
   </ion-title>
   <ion-buttons start>
     <button (click)="dismiss()">
@@ -15,7 +15,7 @@
   <ion-card>
     <ion-list>
     <ion-item>
-      <qrcode [usesvg]="true" [qrdata]="'34404004003434'" [size]="256" [level]="'H'"></qrcode>
+      <img [src]="barcodeImage">
     </ion-item>
   </ion-list>
   </ion-card>

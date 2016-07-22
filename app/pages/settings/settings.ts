@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import {Settings} from '../../providers/settings/settings';
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
+import {BarcodePage} from '../barcode/barcode';
 
 import {JwtHelper} from 'angular2-jwt';
 
@@ -37,6 +38,10 @@ export class SettingsPage implements OnInit {
   token: any;
   selectedPatient;
   patientData: PatientData;
+
+  alertAppoint;
+  alertNews;
+  alertService;
 
   constructor(public nav: NavController,
     private config: Configure,
@@ -103,7 +108,7 @@ export class SettingsPage implements OnInit {
 
   // }
 
-  setDefault(hn) {
+  setDefault(hashKey) {
     let loading = Loading.create({
       content: 'Please wait...'
     });
@@ -112,7 +117,7 @@ export class SettingsPage implements OnInit {
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/patient/set-default`;
-    let params = this.encrypt.encrypt({ hn: hn });
+    let params = this.encrypt.encrypt({ hashKey: hashKey });
 
     this.settings.setDefault(url, this.token, params)
       .then(data => {
@@ -141,7 +146,7 @@ export class SettingsPage implements OnInit {
   }
 
   // show action sheet
-  showTakePhotoAction(hn) {
+  showTakePhotoAction(hashKey) {
     // let idx = _.findIndex(this.patients, { hn: hn });
     let actionSheet = ActionSheet.create({
       title: 'เลือกที่มาของภาพถ่าย',
@@ -152,13 +157,13 @@ export class SettingsPage implements OnInit {
           icon: !this.platform.is('ios') ? 'image' : null,
           // role: 'destructive',
           handler: () => {
-            this.takePhotoWithGallery(hn)
+            this.takePhotoWithGallery(hashKey)
           }
         }, {
           text: 'กล้อง',
           icon: !this.platform.is('ios') ? 'camera' : null,
           handler: () => {
-            this.takePhotoWithCamera(hn)
+            this.takePhotoWithCamera(hashKey)
           }
         }, {
           text: 'ยกเลิก',
@@ -174,7 +179,7 @@ export class SettingsPage implements OnInit {
   this.nav.present(actionSheet);
   }
 
-  takePhotoWithCamera(hn) {
+  takePhotoWithCamera(hashKey) {
     this.platform.ready().then(() => {
       let options = {
         quality: 80,
@@ -195,14 +200,14 @@ export class SettingsPage implements OnInit {
         let base64Image = "data:image/jpeg;base64," + imageData;
         //this.patients[idx].image = base64Image;
         // alert(JSON.stringify(this.patientData));
-        this.savePhoto(hn, base64Image);
+        this.savePhoto(hashKey, base64Image);
       }, (err) => {
         alert(JSON.stringify(err));
       });
     });
   }
 
-  takePhotoWithGallery(hn) {
+  takePhotoWithGallery(hashKey) {
     this.platform.ready().then(() => {
       let options = {
         quality: 80,
@@ -223,21 +228,21 @@ export class SettingsPage implements OnInit {
         let base64Image = "data:image/jpeg;base64," + imageData;
         //this.patients[idx].image = base64Image;
         // alert(JSON.stringify(this.patientData));
-        this.savePhoto(hn, base64Image);
+        this.savePhoto(hashKey, base64Image);
       }, (err) => {
         alert(JSON.stringify(err))
       });
     });
   }
 
-  savePhoto(hn, image) {
+  savePhoto(hashKey, image) {
     let loading = Loading.create({
       content: 'Saving...'
     });
 
     this.nav.present(loading);
 
-    let params = this.encrypt.encrypt({ image: image, hn: hn });
+    let params = this.encrypt.encrypt({ image: image, hashKey: hashKey });
     
     let url = `${this.url}/api/patient/save-photo`;
     this.settings.savePhoto(url, this.token, params)
@@ -251,6 +256,27 @@ export class SettingsPage implements OnInit {
         loading.dismiss();
       });
     
+  }
+
+  getBarcode(hashKey) {
+    this.nav.push(BarcodePage, {hashKey: hashKey});
+  }
+
+  toggleAppoint() {
+    // alert(this.alertAppoint);
+    let status = this.alertAppoint ? 'Y' : 'N';
+  
+    let url = `${this.url}/api/patient/save-photo`;
+    this.settings.savePhoto(url, this.token, )
+      .then(data => {
+        if (data.ok) {
+          this.getPatient();
+        } else {
+          console.log(data.msg);
+        }
+
+        loading.dismiss();
+      });
   }
 
 }

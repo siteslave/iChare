@@ -43,6 +43,22 @@ export class Settings {
     });
   }
 
+  getBarCode(url, token, params) {
+    this.url = url;
+
+    return new Promise((resolve, reject) => {
+
+      let headers = new Headers({ 'Content-Type': 'application/json' });
+      let options = new RequestOptions({ headers: headers });
+
+      let body = { token: token, params: params };
+
+      this.http.post(url, body, options)
+        .map(res => res.json())
+        .subscribe(data => resolve(data), error => reject(error))
+    });
+  }
+
   savePhoto(url, token, params) {
     this.url = url;
 
@@ -52,6 +68,22 @@ export class Settings {
       let options = new RequestOptions({ headers: headers });
 
       let body = { token: token, params: params };
+
+      this.http.post(url, body, options)
+        .map(res => res.json())
+        .subscribe(data => resolve(data), error => reject(error))
+    })
+  }
+
+  setAlert(url, token, type, status) {
+    this.url = url;
+
+    return new Promise((resolve, reject) => {
+
+      let headers = new Headers({ 'Content-Type': 'application/json' });
+      let options = new RequestOptions({ headers: headers });
+
+      let body = { token: token, type: type };
 
       this.http.post(url, body, options)
         .map(res => res.json())
