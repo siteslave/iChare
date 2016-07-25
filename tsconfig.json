@@ -11,7 +11,7 @@
   ],
   "exclude": [
     "node_modules",
-    "typings/main",
+    "typings/global",
     "typings/main.d.ts"
   ],
   "compileOnSave": false,

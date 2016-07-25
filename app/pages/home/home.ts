@@ -4,13 +4,15 @@ import {Platform} from 'ionic-angular';
 
 import {OutPatientPage} from '../out-patient/out-patient';
 import {SettingsPage} from '../settings/settings';
+import {AllergyPage} from '../allergy/allergy';
+import {PttypePage} from '../pttype/pttype';
+import {VaccinePage} from '../vaccine/vaccine';
+import {ScreeningPage} from '../screening/screening';
+import {LabPage} from '../lab/lab';
+import {DrugPage} from '../drug/drug';
+import {IpdPage} from '../ipd/ipd';
 
-/*
-  Generated class for the HomePage page.
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
 @Component({
   templateUrl: 'build/pages/home/home.html',
 })
@@ -25,7 +27,35 @@ export class HomePage {
   }
   
   goOutPatient() {
-      this.nav.push(OutPatientPage)
+    this.nav.push(OutPatientPage);
   };
+
+  goAllergy() {
+    this.nav.push(AllergyPage);
+  }
+
+  goPttype() {
+    this.nav.push(PttypePage);
+  }
+
+  goVaccine() {
+    this.nav.push(VaccinePage);
+  }
+
+  goScreening() {
+    this.nav.push(ScreeningPage);
+  }
+
+  goLab() {
+    this.nav.push(LabPage);
+  }
+
+  goDrug() {
+    this.nav.push(DrugPage);
+  }
+
+  goIpd() {
+    this.nav.push(IpdPage);
+  }
 
 }

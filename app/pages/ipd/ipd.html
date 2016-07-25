@@ -1,0 +1,26 @@
+
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>ประวัติ Admission
+    </ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+<ion-list>
+  <ion-list-header>
+    Admission
+  </ion-list-header>
+  <button ion-item *ngFor="let item of admissions" (click)="goIpdDetail(item.an)">
+    <h2>วันที่: {{ item.regdate }} {{item.regtime}} น.</h2>
+    <p>ตึก: {{ item.ward_name }}</p>
+    <p>อาการ: {{ item.prediag }}</p>
+    <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
+  </button>
+</ion-list>
+
+</ion-content>

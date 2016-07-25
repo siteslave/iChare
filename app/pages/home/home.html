@@ -25,35 +25,42 @@
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         <!--<ion-note item-right>21/01/2559</ion-note>-->
       </button>
-      <button ion-item>
+      <button ion-item (click)="goIpd()">
         <ion-icon name="clipboard" item-left large teal></ion-icon>
         <h2>In Patient</h2>
         <p>แผนกผู้ป่วยใน</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         <!--<ion-note item-right>23/03/2559</ion-note>-->
       </button>
-      <button ion-item>
+      <button ion-item (click)="goDrug()">
+        <ion-icon name="cafe" item-left large green></ion-icon>
+        <h2>Parmacy</h2>
+        <p>การรับประทานยา (ผู้ป่วยนอก)</p>
+        <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
+        <!--<ion-note item-right>26/01/2559</ion-note>-->
+      </button>
+      <button ion-item (click)="goLab()">
         <ion-icon name="flask" item-left large danger></ion-icon>
         <h2>Laboratory</h2>
         <p>ผลตรวจห้องปฏิบัติการ</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         <!--<ion-note item-right>26/01/2559</ion-note>-->
       </button>
-      <button ion-item>
+      <!--<button ion-item>
         <ion-icon name="boat" item-left large primary></ion-icon>
         <h2>Referral</h2>
         <p>ข้อมูลการส่งต่อ</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
-        <!--<ion-note item-right>21/05/2559</ion-note>-->
-      </button>
-      <button ion-item>
+        <ion-note item-right>21/05/2559</ion-note>
+      </button>-->
+      <button ion-item (click)="goScreening()">
         <ion-icon name="chatbubbles" item-left large green></ion-icon>
         <h2>Screening</h2>
         <p>การคัดกรอง</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
         <!--<ion-note item-right>23/03/2559</ion-note>-->
       </button>
-      <button ion-item>
+      <button ion-item (click)="goVaccine()">
         <ion-icon name="medkit" item-left large orange></ion-icon>
         <h2>Vaccines</h2>
         <p>วัคซีน</p>
@@ -66,19 +73,19 @@
         GENERAL INFORMATION
       </ion-list-header>
 
-      <button ion-item>
+      <!--<button ion-item>
         <ion-icon name="contact" item-left large primary></ion-icon>
         <h2>Patient Info</h2>
         <p>ข้อมูลประจำตัวผู้ป่วย</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
-      </button>
-      <button ion-item>
+      </button>-->
+      <button ion-item (click)="goAllergy()">
         <ion-icon name="logo-freebsd-devil" item-left large danger></ion-icon>
         <h2 danger><strong>DRUGALLERGY</strong></h2>
         <p>ข้อมูลการแพ้ยา</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
       </button>
-      <button ion-item>
+      <button ion-item (click)="goPttype()">
         <ion-icon name="logo-bitcoin" item-left large secondary></ion-icon>
         <h2>Insurance</h2>
         <p>ข้อมูลสิทธิการรักษา</p>

@@ -1,12 +1,7 @@
-<!--
-  Generated template for the OutPatientPage page.
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
   <ion-navbar primary>
-    <ion-title>บริการผู้ป่วยนอก (OPD)</ion-title>
+    <ion-title>ผู้ป่วยนอก (OPD)</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -18,38 +13,12 @@
     </ion-refresher-content>
   </ion-refresher>
 
-
-  <ion-card>
-     <ion-list>
-        <ion-list-header>
-          วันที่ 21/05/2559
-        </ion-list-header>
-        <button ion-item (click)="gotoDetail()">
-          <h2>ผู้ป่วยอุบัติเหตุและฉุกเฉิน (ER)</h2>
-          <p>ปวดท้องอย่างรุนแรง, อาเจียน</p>
-          <ion-note item-right>23.30 น.</ion-note>
-          <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
-        </button>
-        <button ion-item>
-          <h2>แผนกทันตกรรม</h2>
-          <p>ตรวจฟัน</p>
-          <ion-note item-right>15.00 น.</ion-note>
-          <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
-        </button>
-      </ion-list>
-  </ion-card>
-
-  <ion-card>
-    <ion-list>
-        <ion-list-header>
-          วันที่ 24/05/2559
-        </ion-list-header>
-        <button ion-item>
-          <h2>แผนกผู้ป่วยนอก</h2>
-          <p>อาเจียน, ปวดท้องด้านขวา</p>
-          <ion-note item-right>10.30 น.</ion-note>
-          <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
-        </button>
-      </ion-list>
-  </ion-card>
+  <ion-list>
+    <button ion-item (click)="gotoDetail(item.vn)" *ngFor="let item of services">
+      <h2>{{ item.vstdate }} {{ item.vsttime }} น.</h2>
+      <p>{{ item.department }}</p>
+      <p>{{ item.cc }}</p>
+      <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
+    </button>
+  </ion-list>
 </ion-content>

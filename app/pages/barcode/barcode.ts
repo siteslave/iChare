@@ -29,7 +29,7 @@ export class BarcodePage implements OnInit {
     private settings: Settings,
     private encrypt: Encrypt,
     private platform: Platform,
-    private params: NavParams
+    private navParams: NavParams
   ) {
 
     this.localStorage = new Storage(LocalStorage);
@@ -39,7 +39,7 @@ export class BarcodePage implements OnInit {
 
   ngOnInit() {
     
-    this.hashKey = this.params.data.hashKey; 
+    this.hashKey = this.navParams.get('hashKey'); 
 
     this.url = this.config.getUrl();
     // console.log(this.hashKey);
@@ -54,8 +54,8 @@ export class BarcodePage implements OnInit {
       .then(data => {
         console.log(data);
         if (data.ok) {
-      
           this.barcode = data.img;
+          // alert(this.barcode);
         } else {
           alert(JSON.stringify(data.msg));
         }

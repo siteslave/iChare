@@ -24,6 +24,12 @@ interface PatientData {
   image?: string
 }
 
+interface httpData {
+  ok: boolean,
+  msg?: any,
+  rows?: any
+}
+
 @Component({
   templateUrl: 'build/pages/settings/settings.html',
   directives: [],
@@ -81,7 +87,7 @@ export class SettingsPage implements OnInit {
         let jsonData = JSON.parse(decryptText);
 
         this.patients = jsonData;
-
+        console.log(jsonData);
         loading.dismiss();
       }, err => {
         let msg = null;
@@ -121,18 +127,19 @@ export class SettingsPage implements OnInit {
 
     this.settings.setDefault(url, this.token, params)
       .then(data => {
-        if (data.ok) {
+        let result = <httpData>data;
+        if (result.ok) {
           loading.dismiss();
           this.getPatient();
         } else {
           loading.dismiss();
           let alert = Alert.create({
             title: 'เกิดข้อผิดพลาด',
-            subTitle: data.msg,
+            subTitle: result.msg,
             buttons: ['ตกลง']
           });
           this.nav.present(alert);
-          console.log(data.msg);
+          console.log(result.msg);
         }
       }, err => {
         loading.dismiss();
@@ -247,10 +254,11 @@ export class SettingsPage implements OnInit {
     let url = `${this.url}/api/patient/save-photo`;
     this.settings.savePhoto(url, this.token, params)
       .then(data => {
-        if (data.ok) {
+        let result = <httpData>data;
+        if (result.ok) {
           this.getPatient();
         } else {
-          console.log(data.msg);
+          console.log(result.msg);
         }
 
         loading.dismiss();
@@ -263,20 +271,11 @@ export class SettingsPage implements OnInit {
   }
 
   toggleAppoint() {
-    // alert(this.alertAppoint);
+    alert(this.alertAppoint);
     let status = this.alertAppoint ? 'Y' : 'N';
   
-    let url = `${this.url}/api/patient/save-photo`;
-    this.settings.savePhoto(url, this.token, )
-      .then(data => {
-        if (data.ok) {
-          this.getPatient();
-        } else {
-          console.log(data.msg);
-        }
-
-        loading.dismiss();
-      });
+    // let url = `${this.url}/api/patient/save-photo`;
+   
   }
 
 }

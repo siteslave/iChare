@@ -9,6 +9,12 @@ import { Login } from '../../providers/login/login';
 import { Configure } from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
 
+interface httpResult {
+  ok: boolean,
+  msg?: string,
+  token?: any
+}
+
 @Component({
   templateUrl: 'build/pages/login/login.html',
   providers: [Login, Configure, JwtHelper, Encrypt]
@@ -54,8 +60,9 @@ export class LoginPage {
     let params = this.encrypt.encrypt({ username: this.username, password: this.password });
     this.login.login(url, params)
       .then(data => {
-        if (data.ok) {
-          this.token = data.token;
+        let result = <httpResult>data;
+        if (result.ok) {
+          this.token = result.token;
           let decodeToken = this.jwtHelper.decodeToken(this.token);
           // console.log(decodeToken);
           // localStorage.setItem('token', this.token);
@@ -116,7 +123,7 @@ export class LoginPage {
           //
           let alert = Alert.create({
             title: 'เกิดข้อผิดพลาด',
-            subTitle: JSON.stringify(data.msg),
+            subTitle: JSON.stringify(result.msg),
             buttons: ['ตกลง']
           });
           loading.dismiss();
