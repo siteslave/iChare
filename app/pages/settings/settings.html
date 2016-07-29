@@ -6,9 +6,9 @@
 -->
 <ion-header>
   <ion-navbar primary>
-    <button menuToggle>
+    <!--<button menuToggle>
       <ion-icon name="menu"></ion-icon>
-    </button>
+    </button>-->
     <ion-title>ตั้งค่าใช้งาน</ion-title>
   </ion-navbar>
 </ion-header>
@@ -16,81 +16,62 @@
 <ion-content class="settings">
 
 <ion-list>
-  <ion-list-header>
-    ผู้ป่วยในความดูแล
-  </ion-list-header>
-
-  <!--<ion-item>
-      <ion-label>ผู้ป่วยในความดูแล</ion-label>
-      <ion-select (ionChange)="selectPatient()" [(ngModel)]="selectedPatient">
-        <ion-option *ngFor="#p of patients" [value]="p.hn">{{p.pname}} {{ p.fname }} {{ p.lname }}</ion-option>
-      </ion-select>
-    </ion-item>-->
-
-    <ion-item *ngFor="#p of patients">
+  <ion-item-group>
+    <ion-item-divider>ผู้ป่วยในความดูแล</ion-item-divider>
+    <ion-item *ngFor="let p of patients">
       <ion-thumbnail item-left>
         <img src="img/avatar-cher.png" *ngIf="!p.image">
         <img [src]="p.image" *ngIf="p.image">
       </ion-thumbnail>
       <h2>{{p.ptname }}</h2>
       <p>อายุ {{ p.age }} ปี</p>
-          <ion-row>
-      <ion-col>
-        <button primary clear (click)="showTakePhotoAction(p.hask_key)">
-          <ion-icon name="camera"></ion-icon>
-          <!--<div>รูปภาพ</div>-->
-        </button>
-      </ion-col>
-      <ion-col>
-        <button primary [disabled]="p.is_default == 'Y'" clear (click)="setDefault(p.hash_key)">
-          <ion-icon name="bookmarks"></ion-icon>
-          <!--<div>เริ่มต้น</div>-->
-        </button>
-      </ion-col>
-      <ion-col>
-        <button primary clear (click)="getBarcode(p.hash_key)">
-          <ion-icon name="barcode"></ion-icon>
-          <!--<div>บาร์โค้ด</div>-->
-        </button>
-      </ion-col>
-      <!--<ion-col>
-        <button danger clear>
-          <ion-icon name="trash"></ion-icon>
-          <div>ลบ</div>
-        </button>
-      </ion-col>-->
-    </ion-row>
+      <ion-row>
+        <ion-col>
+          <button primary clear (click)="showTakePhotoAction(p.hash_key)">
+            <ion-icon name="camera"></ion-icon>
+          </button>
+        </ion-col>
+        <ion-col>
+          <button primary [disabled]="p.is_default == 'Y'" clear (click)="setDefault(p.hash_key)">
+            <ion-icon name="bookmarks"></ion-icon>
+          </button>
+        </ion-col>
+        <ion-col>
+          <button primary clear (click)="getBarcode(p.hash_key)">
+            <ion-icon name="barcode"></ion-icon>
+          </button>
+        </ion-col>
+
+      </ion-row>
     </ion-item>
-</ion-list>
+  </ion-item-group>
+  <ion-item-group>
+    <ion-item-divider>ตั้งค่าการใช้งาน</ion-item-divider>
+    <ion-item>
+      <ion-toggle checked="true" [(ngModel)]="alertAppoint" (ionChange)="toggleAppoint()" primary></ion-toggle>
+      <ion-label>
+        แจ้งเตือนนัดหมาย
+      </ion-label>
+      <ion-icon name='calendar' primary item-left></ion-icon>
+    </ion-item>
 
-<ion-list>
-  <ion-list-header>
-    <!--<ion-icon name="settings" primary itme-left></ion-icon>-->
-    ตั้งค่าการใช้งาน
-  </ion-list-header>
-  <ion-item>
-        <ion-toggle checked="true" [(ngModel)]="alertAppoint" (ionChange)="toggleAppoint()" primary></ion-toggle>
-        <ion-label>
-          แจ้งเตือนนัดหมาย
-        </ion-label>
-        <ion-icon name='calendar' item-left></ion-icon>
-      </ion-item>
+    <ion-item>
+      <ion-toggle checked="true" [(ngModel)]="alertService" (ionChange)="toggleService()" green></ion-toggle>
+      <ion-label>
+        แจ้งเตือนการเข้ารับบริการ
+      </ion-label>
+      <ion-icon name='alarm' green item-left></ion-icon>
+    </ion-item>
 
-      <ion-item>
-        <ion-toggle checked="true" [(ngModel)]="alertService" (ionChange)="toggleService()" green></ion-toggle>
-        <ion-label>
-          แจ้งเตือนการเข้ารับบริการ
-        </ion-label>
-        <ion-icon name='alarm' item-left></ion-icon>
-      </ion-item>
-
-      <ion-item>
-        <ion-toggle checked="false" [(ngModel)]="alertNews" (ionChange)="toggleNews()" danger></ion-toggle>
-        <ion-label>
-          รับข่าวสารจากทางโรงพยาบาล
-        </ion-label>
-        <ion-icon name='chatbubbles' item-left></ion-icon>
-      </ion-item>
+    <ion-item>
+      <ion-toggle checked="false" [(ngModel)]="alertNews" (ionChange)="toggleNews()" danger></ion-toggle>
+      <ion-label>
+        รับข่าวสารจากทางโรงพยาบาล
+      </ion-label>
+      <ion-icon name='chatbubbles' danger item-left></ion-icon>
+    </ion-item>
+  </ion-item-group>
+      
 </ion-list>
 
 </ion-content>

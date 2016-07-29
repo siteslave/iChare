@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-navbar primary no-border-bottom>
+    <ion-title>
+      ข้อมูลรับบริการ
+    </ion-title>
+  </ion-navbar>
+
+  <ion-toolbar [attr.primary]="isAndroid ? '' : null" no-border-top>
+    <ion-segment [(ngModel)]="menu" [attr.light]="isAndroid ? '' : null">
+      <ion-segment-button value="Screening">
+        คัดกรอง
+      </ion-segment-button>
+      <ion-segment-button value="Diag">
+        วินิจฉัยโรค
+      </ion-segment-button>
+      <ion-segment-button value="Drug">
+        ยากลับบ้าน
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div [ngSwitch]="menu">
+    <ion-list *ngSwitchWhen="'Screening'" no-lines>
+      <ion-item>
+        <h2>วันที่</h2>
+        <ion-note item-right>
+          {{vstdate}} {{vsttime}} น.
+        </ion-note>
+      </ion-item>
+      <ion-item>
+        <h2>แผนก</h2>
+        <ion-note item-right>
+          {{department}}
+        </ion-note>
+      </ion-item>
+      <ion-item>
+        <h2>อาการ</h2>
+        <ion-note item-right>
+          {{cc}}
+        </ion-note>
+      </ion-item>
+      <ion-item>
+        <h2>สิทธิ์</h2>
+        <ion-note item-right>
+          {{pttype_name}}
+        </ion-note>
+      </ion-item>
+      <ion-item-divider>คัดกรอง</ion-item-divider>
+      <ion-item>
+        <h2>นำ้หนัก</h2>
+        <ion-note item-right>
+          {{bw}} กก.
+        </ion-note>
+      </ion-item>
+      <ion-item>
+        <h2>ส่วนสูง</h2>
+        <ion-note item-right>
+          {{height}} ซม.
+        </ion-note>
+      </ion-item>
+      <ion-item>
+        <h2>BMI</h2>
+        <ion-note item-right>
+          {{bmi}}
+        </ion-note>
+      </ion-item>
+      <ion-item>
+        <h2>ความดัน</h2>
+        <ion-note item-right>
+          {{bps}}/{{bpd}}
+        </ion-note>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngSwitchWhen="'Diag'">
+      <ion-item-divider>การวินิจฉัยโรค</ion-item-divider>
+      <ion-item *ngFor="let item of diags">
+        <h2>{{item.diag_name}}</h2>
+        <p>{{item.icd10}}</p>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngSwitchWhen="'Drug'">
+      <ion-item-divider>รายการยากลับบ้าน</ion-item-divider>
+      <ion-item *ngFor="let item of drugs">
+        <h2>{{item.drug_name}} - {{ item.qty }} {{ item.units }}</h2>
+        <p>{{item.name1}}</p>
+        <p>{{item.name2}}</p>
+        <p>{{item.name3}}</p>
+      </ion-item>
+    </ion-list>
+
+  </div>
+</ion-content>

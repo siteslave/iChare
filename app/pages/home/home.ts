@@ -11,6 +11,8 @@ import {ScreeningPage} from '../screening/screening';
 import {LabPage} from '../lab/lab';
 import {DrugPage} from '../drug/drug';
 import {IpdPage} from '../ipd/ipd';
+import {AboutPage} from '../about/about';
+import {PrivacyPage} from '../privacy/privacy';
 
 
 @Component({
@@ -25,6 +27,14 @@ export class HomePage {
   constructor(public nav: NavController, platform: Platform) {
     this.isAndroid = platform.is('android');
   }
+  
+  goPrivacy() {
+    this.nav.push(PrivacyPage);
+  };
+  
+  goAbout() {
+    this.nav.push(AboutPage);
+  };
   
   goOutPatient() {
     this.nav.push(OutPatientPage);

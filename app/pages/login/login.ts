@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, Loading, MenuController, Alert, Storage, LocalStorage } from 'ionic-angular';
 import { JwtHelper } from 'angular2-jwt';
 import * as moment from 'moment';
-import {Push} from 'ionic-native';
+import {Push, Badge} from 'ionic-native';
 
 import { TabsPage } from '../tabs/tabs';
 import { Login } from '../../providers/login/login';
@@ -73,10 +73,9 @@ export class LoginPage {
           this.localStorage.set('fullname', decodeToken.fullname);
           this.localStorage.set('memberId', decodeToken.memberId);
 
-          loading.dismiss();
-          this.nav.push(TabsPage);
+          // loading.dismiss();
+          // this.nav.push(TabsPage);
           
-         /* 
           let push = Push.init({
             android: {
               senderID: "238355712119"
@@ -92,21 +91,10 @@ export class LoginPage {
           push.on('registration', (res) => {
             let params = this.encrypt.encrypt({ deviceToken: res.registrationId });
             this.login.saveDevicetoken(url, this.token, params)
-              .then(data => {
-                if (data.ok) {
-                  loading.dismiss();
-                  this.nav.push(TabsPage);
-                } else {
-                  let alert = Alert.create({
-                    title: 'เกิดข้อผิดพลาด',
-                    subTitle: JSON.stringify(data.msg),
-                    buttons: ['ตกลง']
-                  });
-
-                  loading.dismiss();
-                  this.nav.present(alert);
-        
-                }
+              .then(() => {
+                // console.log(Badge.hasPermission());
+                loading.dismiss();
+                this.nav.push(TabsPage);
               }, err => {
                 let alert = Alert.create({
                     title: 'เกิดข้อผิดพลาด',
@@ -118,7 +106,12 @@ export class LoginPage {
                   this.nav.present(alert);
               });
           });
-          */
+
+          push.on('notification', (data) => {
+            // get notification
+            console.log(data);
+          });
+          
         } else {
           //
           let alert = Alert.create({

@@ -60,7 +60,7 @@
       <ion-icon name="calendar" primary></ion-icon>
       ประวัติการใช้สิทธิ์การรักษา
     </ion-list-header>
-    <button ion-item *ngFor="let item of historyPttype">
+    <button ion-item *ngFor="let item of historyPttype" (click)="goDetail(item.vn)">
       <h2>{{ item.pttype_name }}</h2>
       <p>{{ item.vstdate }} {{ item.vsttime }} น.</p>
       <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>

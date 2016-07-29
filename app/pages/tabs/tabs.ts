@@ -6,7 +6,7 @@ import {SettingsPage} from '../settings/settings';
 import {NewsPage} from '../news/news';
 import {DashPage} from '../dash/dash';
 
-// import * as cryptojs from 'crypto-js';
+import {AboutPage} from '../about/about';
 
 @Component({
   templateUrl: 'build/pages/tabs/tabs.html'
@@ -19,38 +19,15 @@ export class TabsPage {
   tabSettings: any = SettingsPage;
   tabNews: any = NewsPage;
   tabDash: any = DashPage;
-  @ViewChild('tabMain') tabs: Tabs;
+  // @ViewChild('tabMain') tabs: Tabs;
   toast;
   localStorage;
 
   constructor(public nav: NavController) {
 
-    // this.localStorage = new Storage(LocalStorage);
-    
-    // try {
-    //   this.localStorage.get('patient')
-    //     .then(patient => {
-    //       let _patient = JSON.parse(patient);
-    //       if (!_patient) {
-    //         let toast = Toast.create({
-    //           message: 'กรุณากำหนดค่าเริ่มต้นสำหรับผู้ป่วย',
-    //           duration: 3000,
-    //           position: 'top'
-    //         });
-    //         // this.tabs.select(3);
-    //         this.nav.present(toast);
-           
-    //       } else {
-          
-    //       }
-    //     });
-    // } catch (err) {
-    //   console.log('Error: ' + JSON.stringify(err));
-    // }
-
-  }
-
-  // ngAfterViewInit() {
-  //   this.tabs.select(3);
-  // }  
+    }
+ 
+    openAbout() {
+      this.nav.push(AboutPage)
+    } 
 }

@@ -5,6 +5,8 @@ import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
 
 import {Pttype} from '../../providers/pttype/pttype';
+import {OutPatientDetailPage} from '../out-patient-detail/out-patient-detail';
+
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
@@ -16,7 +18,8 @@ interface PttypeResult {
 interface PttypeHistory {
   vstdate?: any,
   vsttime?: any,
-  pttype_name?: any
+  pttype_name?: any,
+  vn?: any
 }
 
 interface PttypeCurrent {
@@ -103,6 +106,7 @@ export class PttypePage implements OnInit {
               history.pttype_name = row.pttype_name;
               history.vstdate = `${moment(row.vstdate).format('DD/MM')}/${moment(row.vstdate).get('year') + 543}`;
               history.vsttime = moment(row.vsttime, 'HH:mm:ss').format('HH:mm');
+              history.vn = row.vn;
 
               this.historyPttype.push(history);
             }
@@ -120,6 +124,10 @@ export class PttypePage implements OnInit {
           });
       });
         
+  }
+
+  goDetail(vn) {
+    this.nav.push(OutPatientDetailPage, { vn: vn });
   }
   
 }

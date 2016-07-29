@@ -71,23 +71,55 @@ export class Settings {
 
       this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data), error => reject(error))
+        .subscribe(data => {
+          if (data.ok) {
+            resolve();
+          } else {
+            reject(data.msg);
+          }
+        }, error => reject(error))
     })
   }
 
   setAlert(url, token, type, status) {
-    this.url = url;
+
+    return new Promise((resolve, reject) => {
+
+      let headers = new Headers({ 'Content-Type': 'application/json' });
+      let options = new RequestOptions({ headers: headers });
+      let body = { token: token, type: type, status: status };
+
+      
+      this.http.post(url, body, options)
+        .map(res => res.json())
+        .subscribe(data => {
+          if (data.ok) {
+            resolve();
+          } else {
+            resolve(data.msg);
+          }
+        }, error => reject(error))
+    })
+  }
+
+  getAlertSetting(url, token) {
 
     return new Promise((resolve, reject) => {
 
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
 
-      let body = { token: token, type: type };
+      let body = { token: token };
 
       this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data), error => reject(error))
+        .subscribe(data => {
+          if (data.ok) {
+            resolve(data.alert);
+          } else {
+            resolve(data.msg);
+          }
+        }, error => reject(error))
     })
   }
 

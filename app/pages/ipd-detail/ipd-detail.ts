@@ -94,8 +94,8 @@ export class IpdDetailPage implements OnInit {
             // console.log(jsonData);
 
             let rowsInfo = <IpdResult>register;
-            this.dchdate = `${moment(rowsInfo.dchdate).format('DD/MM')}/${moment(rowsInfo.dchdate).get('year') + 543}`;
-            this.dchtime = moment(rowsInfo.dchtime, 'HH:mm:ss').format('HH:mm');
+            this.dchdate = rowsInfo.dchdate ? `${moment(rowsInfo.dchdate).format('DD/MM')}/${moment(rowsInfo.dchdate).get('year') + 543}` : '-';
+            this.dchtime = rowsInfo.dchtime ? moment(rowsInfo.dchtime, 'HH:mm:ss').format('HH:mm') : '-';
             this.regdate = `${moment(rowsInfo.regdate).format('DD/MM')}/${moment(rowsInfo.regdate).get('year') + 543}`;
             this.regtime = moment(rowsInfo.regtime, 'HH:mm:ss').format('HH:mm');
 

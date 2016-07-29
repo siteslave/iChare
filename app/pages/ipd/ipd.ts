@@ -58,8 +58,7 @@ export class IpdPage implements OnInit {
     });
 
     this.nav.present(loading);
-    
-    let secretKey = this.config.getSecretKey();
+  
     let url = `${this.url}/api/ipd/history`;
   
     this.localStorage.get('token')

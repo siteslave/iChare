@@ -49,7 +49,13 @@ export class Login {
 
       this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data), error => reject(error))
+        .subscribe(data => {
+          if (data.ok) {
+            resolve();
+          } else {
+            reject(data.msg);
+          }
+        }, error => reject(error))
     })
 
   }

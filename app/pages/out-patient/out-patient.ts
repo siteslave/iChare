@@ -27,6 +27,7 @@ export class OutPatientPage implements OnInit {
   url: any
   localStorage: any;
   services: any;
+  refresher: any;
 
   constructor(
     private nav: NavController,
@@ -45,17 +46,63 @@ export class OutPatientPage implements OnInit {
   }
 
   doRefresh(refresher) {
-    console.log('Begin async operation', refresher);
+    //console.log('Begin async operation', refresher);
 
-    setTimeout(() => {
-      console.log('Async operation has ended');
-      refresher.complete();
-    }, 2000);
+    // setTimeout(() => {
+    //   console.log('Async operation has ended');
+    //   refresher.complete();
+    // }, 2000);
+    let secretKey = this.config.getSecretKey();
+    let url = `${this.url}/api/opd/history`;
+  
+    this.localStorage.get('token')
+      .then(token => {
+        let _token = token;
+        this.services = [];
+
+        this.opd.getHistory(url, _token)
+          .then(data => {
+            let decryptText = this.encrypt.decrypt(data);
+            let jsonData = JSON.parse(decryptText);
+            let rows = <Array<any>>jsonData;
+            console.log(rows);
+
+            for (let row of rows) {
+              let service = <ServiceResult>row;
+              
+              service.vstdate = `${moment(row.vstdate).format('D/M')}/${moment(row.vstdate).get('year') + 543}`;
+              service.vsttime = moment(row.vsttime, 'HH:mm:ss').format('HH:mm');
+              service.department = row.department;
+              service.vn = row.vn;
+
+              this.services.push(service);
+            }
+
+            refresher.complete();
+          }, err => {
+            refresher.complete();
+            this.refresher.complete();
+            let toast = Toast.create({
+              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+              duration: 3000,
+              position: 'top'
+            });
+
+            this.nav.present(toast);
+          });
+      });
 
   }
 
   ngOnInit() {
 
+  }
+
+  ionViewDidEnter() {
+    this.getData();
+  }
+
+  getData() {
     let loading = Loading.create({
       content: 'Please wait...'
     });
@@ -88,9 +135,11 @@ export class OutPatientPage implements OnInit {
               this.services.push(service);
             }
 
+            // this.refresher.complete();            
             loading.dismiss();
           }, err => {
             loading.dismiss();
+            this.refresher.complete(); 
             let toast = Toast.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
@@ -100,7 +149,6 @@ export class OutPatientPage implements OnInit {
             this.nav.present(toast);
           });
       });
-        
   }
   
 }

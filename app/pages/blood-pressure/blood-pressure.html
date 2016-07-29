@@ -6,7 +6,12 @@
 -->
 <ion-header>
   <ion-navbar primary>
-    <ion-title>BLOOD PRESSURE</ion-title>
+    <ion-title>ความดันโลหิต</ion-title>
+    <!--<ion-buttons end>
+      <button>
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>-->
   </ion-navbar>
 </ion-header>
 
@@ -17,88 +22,25 @@
           HISTORY/GRAPH (ปัดเพื่อดูกราฟ)
         </ion-list-header>
       </ion-list>
-      <ion-slides pager="false">
+      <ion-slides pager>
 
         <ion-slide>
-          <ion-list no-lines>
-            <ion-list-header primary>23 มิถุนายน 2559 13:00 น.</ion-list-header>
+          <ion-list no-lines *ngFor="let item of bpData">
+            <ion-list-header><strong>{{item.vstdate}} {{item.vsttime}} น.</strong></ion-list-header>
             <ion-item>
               <ion-grid>
                 <ion-row>
                   <ion-col width-50>
                     <div style="text-align: center;">
                       <span style="line-height: 10%; font-weight: bold; color: grey;">SYSTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" teal>120</h1>
+                      <h1 style="font-size: 50px; font-weight: bold;" teal>{{item.bps}}</h1>
                       <span style="line-height: 10%; color: grey;">mm/Hg</span>
                     </div>
                   </ion-col>
                   <ion-col width-50>
                     <div style="text-align: center;">
                       <span style="line-height: 10%; font-weight: bold; color: grey;">DIASTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" danger>90</h1>
-                      <span style="line-height: 10%; color: grey;">mm/Hg</span>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-            <ion-list-header primary>24 มิถุนายน 2559 15:40 น.</ion-list-header>
-            <ion-item>
-              <ion-grid>
-                <ion-row>
-                  <ion-col width-50>
-                    <div style="text-align: center;">
-                      <span style="line-height: 10%; font-weight: bold; color: grey;">SYSTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" teal>100</h1>
-                      <span style="line-height: 10%; color: grey;">mm/Hg</span>
-                    </div>
-                  </ion-col>
-                  <ion-col width-50>
-                    <div style="text-align: center;">
-                      <span style="line-height: 10%; font-weight: bold; color: grey;">DIASTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" danger>80</h1>
-                      <span style="line-height: 10%; color: grey;">mm/Hg</span>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-            <ion-list-header primary>26 มิถุนายน 2559 16:06 น.</ion-list-header>
-            <ion-item>
-              <ion-grid>
-                <ion-row>
-                  <ion-col width-50>
-                    <div style="text-align: center;">
-                      <span style="line-height: 10%; font-weight: bold; color: grey;">SYSTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" teal>110</h1>
-                      <span style="line-height: 10%; color: grey;">mm/Hg</span>
-                    </div>
-                  </ion-col>
-                  <ion-col width-50>
-                    <div style="text-align: center;">
-                      <span style="line-height: 10%; font-weight: bold; color: grey;">DIASTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" danger>79</h1>
-                      <span style="line-height: 10%; color: grey;">mm/Hg</span>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-            <ion-list-header primary>28 มิถุนายน 2559 15:20 น.</ion-list-header>
-            <ion-item>
-              <ion-grid>
-                <ion-row>
-                  <ion-col width-50>
-                    <div style="text-align: center;">
-                      <span style="line-height: 10%; font-weight: bold; color: grey;">SYSTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" teal>110</h1>
-                      <span style="line-height: 10%; color: grey;">mm/Hg</span>
-                    </div>
-                  </ion-col>
-                  <ion-col width-50>
-                    <div style="text-align: center;">
-                      <span style="line-height: 10%; font-weight: bold; color: grey;">DIASTOLIC</span>
-                      <h1 style="font-size: 30px; font-weight: bold;" danger>95</h1>
+                      <h1 style="font-size: 50px; font-weight: bold;" danger>{{item.bpd}}</h1>
                       <span style="line-height: 10%; color: grey;">mm/Hg</span>
                     </div>
                   </ion-col>
@@ -107,14 +49,6 @@
             </ion-item>
           </ion-list>
         </ion-slide>
-        <ion-slide>
-          <ion-row>
-            <ion-col center text-center>
-              <chart style="display: block;" [options]="optionFBS"></chart>
-            </ion-col>
-          </ion-row>
-        </ion-slide>
-
         <ion-slide>
           <ion-row>
             <ion-col center text-center>

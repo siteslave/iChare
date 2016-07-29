@@ -10,18 +10,18 @@ import {BarcodePage} from '../barcode/barcode';
 
 import {JwtHelper} from 'angular2-jwt';
 
-/*
-  Generated class for the SettingsPage page.
-
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
-
 interface PatientData {
-  hn?: string,
-  fullname?: string,
-  age?: number,
-  image?: string
+  age?: any,
+  hash_key?: any,
+  image?: any,
+  is_default?: any,
+  ptname?: any
+}
+
+interface AlertData {
+  alert_news?: any;
+  alert_appoint?: any;
+  alert_service?: any;
 }
 
 interface httpData {
@@ -43,11 +43,9 @@ export class SettingsPage implements OnInit {
   patients: any;
   token: any;
   selectedPatient;
-  patientData: PatientData;
-
-  alertAppoint;
-  alertNews;
-  alertService;
+  alertAppoint: boolean = false;
+  alertNews: boolean = false;
+  alertService: boolean = false;
 
   constructor(public nav: NavController,
     private config: Configure,
@@ -62,8 +60,11 @@ export class SettingsPage implements OnInit {
 
   ngOnInit() {
 
-    this.getPatient();    
-    
+  }
+
+  ionViewDidEnter() {
+    this.getPatient();  
+    this.getAlertSetting();
   }
 
   getPatient() {
@@ -86,8 +87,22 @@ export class SettingsPage implements OnInit {
         let decryptText = this.encrypt.decrypt(encryptedData);
         let jsonData = JSON.parse(decryptText);
 
-        this.patients = jsonData;
-        console.log(jsonData);
+        let rows = <Array<any>>jsonData;
+        this.patients = [];
+
+        for (let row of rows) {
+          let data = <PatientData>row;
+          data.age = row.age;
+          data.hash_key = row.hash_key;
+          data.image = row.image;
+          data.is_default = row.is_default;
+          data.ptname = row.ptname;
+
+          this.patients.push(data);
+        }
+
+        console.log(this.patients);
+
         loading.dismiss();
       }, err => {
         let msg = null;
@@ -105,23 +120,14 @@ export class SettingsPage implements OnInit {
       });
   }
 
-  // selectPatient() {
-  //   // console.log(this.selectedPatient);
-  //   let idx = _.findIndex(this.patients, { hn: this.selectedPatient });
-  //   if (idx > -1) {
-  //     this.localStorage.set('patient', JSON.stringify(this.patients[idx]));
-  //   }
-
-  // }
-
   setDefault(hashKey) {
+
     let loading = Loading.create({
       content: 'Please wait...'
     });
 
     this.nav.present(loading);
     
-    let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/patient/set-default`;
     let params = this.encrypt.encrypt({ hashKey: hashKey });
 
@@ -154,6 +160,7 @@ export class SettingsPage implements OnInit {
 
   // show action sheet
   showTakePhotoAction(hashKey) {
+    console.log(hashKey);
     // let idx = _.findIndex(this.patients, { hn: hn });
     let actionSheet = ActionSheet.create({
       title: 'เลือกที่มาของภาพถ่าย',
@@ -249,19 +256,31 @@ export class SettingsPage implements OnInit {
 
     this.nav.present(loading);
 
-    let params = this.encrypt.encrypt({ image: image, hashKey: hashKey });
+    this.localStorage.get('token')
+      .then(token => {
+        let params = this.encrypt.encrypt({ image: image, hashKey: hashKey });
     
-    let url = `${this.url}/api/patient/save-photo`;
-    this.settings.savePhoto(url, this.token, params)
-      .then(data => {
-        let result = <httpData>data;
-        if (result.ok) {
-          this.getPatient();
-        } else {
-          console.log(result.msg);
-        }
+        let url = `${this.url}/api/patient/save-photo`;
+        this.settings.savePhoto(url, token, params)
+          .then(() => {
+            this.getPatient();
+            loading.dismiss();
+            let toast = Toast.create({
+              message: 'เรียบร้อย',
+              duration: 3000,
+              position: 'bottom'
+            });
 
-        loading.dismiss();
+            this.nav.present(toast);
+          }, err => {
+            let toast = Toast.create({
+              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          });
       });
     
   }
@@ -271,12 +290,117 @@ export class SettingsPage implements OnInit {
   }
 
   toggleAppoint() {
-    alert(this.alertAppoint);
+    // alert(this.alertAppoint);
+    // type : 1 = news, 2 = appoint, 3 = service
     let status = this.alertAppoint ? 'Y' : 'N';
-  
-    // let url = `${this.url}/api/patient/save-photo`;
-   
+    let url = `${this.url}/api/member/toggle-alert`;
+    this.localStorage.get('token')
+      .then(token => {
+        console.log(token);
+        this.settings.setAlert(url, token, '2', status)
+          .then(() => {
+            let toast = Toast.create({
+              message: 'เรียบร้อย',
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          }, err => {
+            let toast = Toast.create({
+              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          });
+       });
+
   }
+
+  toggleService() {
+    // type : 1 = news, 2 = appoint, 3 = service
+    // alert(this.alertAppoint);
+    let status = this.alertAppoint ? 'Y' : 'N';
+    let url = `${this.url}/api/member/toggle-alert`;
+    this.localStorage.get('token')
+      .then(token => {
+        this.settings.setAlert(url, token, '3', status)
+          .then(() => {
+            let toast = Toast.create({
+              message: 'เรียบร้อย',
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          }, err => {
+            let toast = Toast.create({
+              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          });
+       });
+
+  }
+
+  toggleNews() {
+    // type : 1 = news, 2 = appoint, 3 = service
+    // alert(this.alertAppoint);
+    let status = this.alertAppoint ? 'Y' : 'N';
+    let url = `${this.url}/api/member/toggle-alert`;
+    this.localStorage.get('token')
+      .then(token => {
+        this.settings.setAlert(url, token, '1', status)
+          .then(() => {
+            let toast = Toast.create({
+              message: 'เรียบร้อย',
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          }, err => {
+            let toast = Toast.create({
+              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          });
+       });
+  }
+
+  getAlertSetting() {
+
+    let url = `${this.url}/api/member/get-alert-setting`;
+    this.localStorage.get('token')
+      .then(token => {
+        this.settings.getAlertSetting(url, token)
+          .then(alert => {
+            let _alert = <AlertData>alert;
+
+            this.alertAppoint = _alert.alert_appoint == 'Y' ? true : false;
+            this.alertNews = _alert.alert_news == 'Y' ? true : false;
+            this.alertService = _alert.alert_service == 'Y' ? true : false;
+
+          }, err => {
+            let toast = Toast.create({
+              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+              duration: 3000,
+              position: 'bottom'
+            });
+
+            this.nav.present(toast);
+          });
+       });
+  }
+  
 
 }
 

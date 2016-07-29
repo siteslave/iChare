@@ -1,4 +1,4 @@
-<ion-menu id="loggedInMenu" [content]="content">
+<!--<ion-menu id="loggedInMenu" [content]="content">
   <ion-header>
     <ion-toolbar primary>
       <ion-buttons start>
@@ -14,17 +14,12 @@
       <ion-list-header>
         Main Menu
       </ion-list-header>
-      <!--<button ion-item (click)="showList()">
-        <ion-icon danger large item-left name="help-circle"></ion-icon>
-        <strong>Patients</strong>
-        <p>ข้อมูลผู้ป่วยในความดูแล</p>
-      </button>-->
       <button ion-item>
         <ion-icon danger large item-left name="help-circle"></ion-icon>
         <strong>Privacy</strong>
         <p>ข้อตกลงการใช้โปรแกรม</p>
       </button>
-      <button ion-item>
+      <button ion-item (click)="openPage()" menuClose>
         <ion-icon primary large item-left name="contact"></ion-icon>
         <strong>About</strong>
         <p>เกี่ยวกับโปรแกรม</p>
@@ -49,6 +44,6 @@
 
   </ion-content>
 
-</ion-menu>
+</ion-menu>-->
 
 <ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
