@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -34,7 +34,9 @@ export class OutPatientPage implements OnInit {
     private platform: Platform,
     private encrypt: Encrypt,
     private config: Configure,
-    private opd: Opd
+    private opd: Opd,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.url = this.config.getUrl();
     this.localStorage = new Storage(LocalStorage);
@@ -82,13 +84,13 @@ export class OutPatientPage implements OnInit {
           }, err => {
             refresher.complete();
             this.refresher.complete();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
 
@@ -103,11 +105,11 @@ export class OutPatientPage implements OnInit {
   }
 
   getData() {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/history`;
@@ -140,13 +142,13 @@ export class OutPatientPage implements OnInit {
           }, err => {
             loading.dismiss();
             this.refresher.complete(); 
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
   }

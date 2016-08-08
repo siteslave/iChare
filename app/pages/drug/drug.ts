@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -31,7 +31,9 @@ export class DrugPage implements OnInit {
     private nav: NavController,
     private config: Configure,
     private encrypt: Encrypt,
-    private drug: Drug
+    private drug: Drug,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
 
     this.url = this.config.getUrl();
@@ -40,11 +42,11 @@ export class DrugPage implements OnInit {
 
   ngOnInit() {
 
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/drug/history`;
@@ -58,7 +60,7 @@ export class DrugPage implements OnInit {
             let decryptText = this.encrypt.decrypt(data);
             let jsonData = JSON.parse(decryptText);
 
-            console.log(jsonData);
+            // console.log(jsonData);
 
             let rows = jsonData;
 
@@ -77,18 +79,18 @@ export class DrugPage implements OnInit {
               this.drugs.push(drugData);
             }
             
-            console.log(this.drugs);
+            // console.log(this.drugs);
 
             loading.dismiss();
           }, err => {
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
         

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, NavParams, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -38,7 +38,9 @@ export class AppointDetailPage {
     private encrypt: Encrypt,
     private config: Configure,
     private appointment: Appointment,
-    private navParams: NavParams
+    private navParams: NavParams,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.url = this.config.getUrl();
     this.localStorage = new Storage(LocalStorage);
@@ -52,11 +54,11 @@ export class AppointDetailPage {
   }
 
   getData() {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
 
     this.localStorage.get('token')
       .then(token => {
@@ -78,13 +80,13 @@ export class AppointDetailPage {
           }, err => {
             loading.dismiss();
             // this.refresher.complete(); 
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
   }

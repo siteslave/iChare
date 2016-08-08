@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Camera} from 'ionic-native';
-import {Modal, Toast, Alert, ActionSheet, Loading, Platform, NavController, NavParams, ViewController, Storage, LocalStorage} from 'ionic-angular';
+import {ModalController, ToastController, AlertController, ActionSheetController, LoadingController, Platform, NavController, NavParams, ViewController, Storage, LocalStorage} from 'ionic-angular';
 import * as _ from 'lodash';
 
 import {Settings} from '../../providers/settings/settings';
@@ -51,7 +51,12 @@ export class SettingsPage implements OnInit {
     private config: Configure,
     private settings: Settings,
     private encrypt: Encrypt,
-    private platform: Platform
+    private platform: Platform,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
+    private actionSheetCtrl: ActionSheetController
   ) {
     this.localStorage = new Storage(LocalStorage);
     this.url = this.config.getUrl();
@@ -68,11 +73,12 @@ export class SettingsPage implements OnInit {
   }
 
   getPatient() {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    // this.nav.present(loading);
+    loading.present();
 
     this.localStorage.get('token')
       .then(token => {
@@ -111,22 +117,24 @@ export class SettingsPage implements OnInit {
         } else {
           msg = 'Connection failed';
         }
-        let alert = Alert.create({
+        let alert = this.alertCtrl.create({
           title: 'เกิดข้อผิดพลาด',
           subTitle: msg,
           buttons: ['ตกลง']
         });
-          this.nav.present(alert);
+          // this.nav.present(alert);
+        alert.present();
       });
   }
 
   setDefault(hashKey) {
 
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    // this.nav.present(loading);
+    loading.present();
     
     let url = `${this.url}/api/patient/set-default`;
     let params = this.encrypt.encrypt({ hashKey: hashKey });
@@ -139,22 +147,24 @@ export class SettingsPage implements OnInit {
           this.getPatient();
         } else {
           loading.dismiss();
-          let alert = Alert.create({
+          let alert = this.alertCtrl.create({
             title: 'เกิดข้อผิดพลาด',
             subTitle: result.msg,
             buttons: ['ตกลง']
           });
-          this.nav.present(alert);
+          // this.nav.present(alert);
+          alert.present();
           console.log(result.msg);
         }
       }, err => {
         loading.dismiss();
-        let alert = Alert.create({
+        let alert = this.alertCtrl.create({
           title: 'เกิดข้อผิดพลาด',
           subTitle: `Error [${err.status}]: ${err.statusText} `,
           buttons: ['ตกลง']
         });
-        this.nav.present(alert);
+        // this.nav.present(alert);
+        alert.present();
       });
   }
 
@@ -162,7 +172,7 @@ export class SettingsPage implements OnInit {
   showTakePhotoAction(hashKey) {
     console.log(hashKey);
     // let idx = _.findIndex(this.patients, { hn: hn });
-    let actionSheet = ActionSheet.create({
+    let actionSheet = this.actionSheetCtrl.create({
       title: 'เลือกที่มาของภาพถ่าย',
       cssClass:'action-sheets-basic-page',
       buttons: [
@@ -190,7 +200,8 @@ export class SettingsPage implements OnInit {
       ]
     });
 
-  this.nav.present(actionSheet);
+  // this.nav.present(actionSheet);
+    actionSheet.present();
   }
 
   takePhotoWithCamera(hashKey) {
@@ -250,11 +261,12 @@ export class SettingsPage implements OnInit {
   }
 
   savePhoto(hashKey, image) {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Saving...'
     });
 
-    this.nav.present(loading);
+    // this.nav.present(loading);
+    loading.present();
 
     this.localStorage.get('token')
       .then(token => {
@@ -265,21 +277,23 @@ export class SettingsPage implements OnInit {
           .then(() => {
             this.getPatient();
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เรียบร้อย',
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           }, err => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           });
       });
     
@@ -299,21 +313,23 @@ export class SettingsPage implements OnInit {
         console.log(token);
         this.settings.setAlert(url, token, '2', status)
           .then(() => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เรียบร้อย',
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           }, err => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           });
        });
 
@@ -328,21 +344,23 @@ export class SettingsPage implements OnInit {
       .then(token => {
         this.settings.setAlert(url, token, '3', status)
           .then(() => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เรียบร้อย',
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           }, err => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           });
        });
 
@@ -357,21 +375,23 @@ export class SettingsPage implements OnInit {
       .then(token => {
         this.settings.setAlert(url, token, '1', status)
           .then(() => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เรียบร้อย',
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           }, err => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           });
        });
   }
@@ -390,13 +410,14 @@ export class SettingsPage implements OnInit {
             this.alertService = _alert.alert_service == 'Y' ? true : false;
 
           }, err => {
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'bottom'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           });
        });
   }

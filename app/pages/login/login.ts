@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, Loading, MenuController, Alert, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, LoadingController, MenuController, AlertController, Storage, LocalStorage } from 'ionic-angular';
 import { JwtHelper } from 'angular2-jwt';
 import * as moment from 'moment';
 import {Push, Badge} from 'ionic-native';
@@ -33,7 +33,9 @@ export class LoginPage {
     private menu: MenuController,
     private config: Configure,
     private jwtHelper: JwtHelper,
-    private encrypt: Encrypt
+    private encrypt: Encrypt,
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
   ) {
     this.menu.enable(false, 'loggedInMenu');
     this.jwtHelper = new JwtHelper();   
@@ -52,11 +54,12 @@ export class LoginPage {
     // console.log(this.username);
     // console.log(this.password);
     // url = `${url}`
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
     
-    this.nav.present(loading);
+    loading.present();
+    
     let params = this.encrypt.encrypt({ username: this.username, password: this.password });
     this.login.login(url, params)
       .then(data => {
@@ -73,54 +76,55 @@ export class LoginPage {
           this.localStorage.set('fullname', decodeToken.fullname);
           this.localStorage.set('memberId', decodeToken.memberId);
 
-          // loading.dismiss();
-          // this.nav.push(TabsPage);
+          loading.dismiss();
+          this.nav.push(TabsPage);
           
-          let push = Push.init({
-            android: {
-              senderID: "238355712119"
-            },
-            ios: {
-              alert: "true",
-              badge: true,
-              sound: 'false'
-            },
-            windows: {}
-          });
+          // let push = Push.init({
+          //   android: {
+          //     senderID: "238355712119"
+          //   },
+          //   ios: {
+          //     alert: "true",
+          //     badge: true,
+          //     sound: 'false'
+          //   },
+          //   windows: {}
+          // });
 
-          push.on('registration', (res) => {
-            let params = this.encrypt.encrypt({ deviceToken: res.registrationId });
-            this.login.saveDevicetoken(url, this.token, params)
-              .then(() => {
-                // console.log(Badge.hasPermission());
-                loading.dismiss();
-                this.nav.push(TabsPage);
-              }, err => {
-                let alert = Alert.create({
-                    title: 'เกิดข้อผิดพลาด',
-                    subTitle: `Error [${err.status}]: ${err.statusText} `,
-                    buttons: ['ตกลง']
-                  });
+          // push.on('registration', (res) => {
+          //   let params = this.encrypt.encrypt({ deviceToken: res.registrationId });
+          //   this.login.saveDevicetoken(url, this.token, params)
+          //     .then(() => {
+          //       // console.log(Badge.hasPermission());
+          //       loading.dismiss();
+          //       this.nav.push(TabsPage);
+          //     }, err => {
+          //       let alert = Alert.create({
+          //           title: 'เกิดข้อผิดพลาด',
+          //           subTitle: `Error [${err.status}]: ${err.statusText} `,
+          //           buttons: ['ตกลง']
+          //         });
 
-                  loading.dismiss();
-                  this.nav.present(alert);
-              });
-          });
+          //         loading.dismiss();
+          //         this.nav.present(alert);
+          //     });
+          // });
 
-          push.on('notification', (data) => {
-            // get notification
-            console.log(data);
-          });
+          // push.on('notification', (data) => {
+          //   // get notification
+          //   console.log(data);
+          // });
           
         } else {
           //
-          let alert = Alert.create({
+          let alert = this.alertCtrl.create({
             title: 'เกิดข้อผิดพลาด',
             subTitle: JSON.stringify(result.msg),
             buttons: ['ตกลง']
           });
           loading.dismiss();
-          this.nav.present(alert);
+          alert.present();
+          // this.nav.present(alert);
         }
         
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Modal, Toast, Loading, Platform, NavController, NavParams, ViewController, LocalStorage, Storage} from 'ionic-angular';
+import {ModalController, Platform, NavController, NavParams, ViewController, LocalStorage, Storage} from 'ionic-angular';
 
 import {Settings} from '../../providers/settings/settings';
 import {Configure} from '../../providers/configure/configure';

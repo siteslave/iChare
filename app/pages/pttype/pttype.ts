@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -54,7 +54,9 @@ export class PttypePage implements OnInit {
     private encrypt: Encrypt,
     private config: Configure,
     private pttype: Pttype,
-    private platform: Platform
+    private platform: Platform,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.localStorage = new Storage(LocalStorage);
     this.url = this.config.getUrl();
@@ -65,11 +67,11 @@ export class PttypePage implements OnInit {
 
   ngOnInit() {
 
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/pttype/get-pttype`;
@@ -114,13 +116,13 @@ export class PttypePage implements OnInit {
             loading.dismiss();
           }, err => {
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
         

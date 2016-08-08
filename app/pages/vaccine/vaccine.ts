@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -32,7 +32,9 @@ export class VaccinePage implements OnInit {
     private platform: Platform,
     private config: Configure,
     private encrypt: Encrypt,
-    private vaccine: Vaccine
+    private vaccine: Vaccine,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.isAndroid = this.platform.is('android');
     this.localStorage = new Storage(LocalStorage);
@@ -41,11 +43,12 @@ export class VaccinePage implements OnInit {
 
   ngOnInit() {
     
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();    
+    // this.nav.present(loading);
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/vaccine/history`;
@@ -72,7 +75,7 @@ export class VaccinePage implements OnInit {
 
               this.vaccines.push(data);
             }
-            console.log(this.vaccines.length);
+            // console.log(this.vaccines.length);
             
             if (this.vaccines.length) {
               this.hasData = true;
@@ -84,13 +87,14 @@ export class VaccinePage implements OnInit {
             loading.dismiss();
           }, err => {
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            // this.nav.present(toast);
+            toast.present();
           });
       });
         

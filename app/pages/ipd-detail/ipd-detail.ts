@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, NavParams, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 import {Encrypt} from '../../providers/encrypt/encrypt';
 import {Configure} from '../../providers/configure/configure';
 import {Ipd} from '../../providers/ipd/ipd';
@@ -58,7 +58,9 @@ export class IpdDetailPage implements OnInit {
     private platform: Platform,
     private config: Configure,
     private encrypt: Encrypt,
-    private ipd: Ipd
+    private ipd: Ipd,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.localStorage = new Storage(LocalStorage);
     this.url = this.config.getUrl();
@@ -69,11 +71,11 @@ export class IpdDetailPage implements OnInit {
 
   ngOnInit() {
 
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
     
     this.localStorage.get('token')
       .then(token => {
@@ -110,13 +112,13 @@ export class IpdDetailPage implements OnInit {
             loading.dismiss();
           }, err => {
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
 
       });

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -55,7 +55,9 @@ export class ScreeningPage implements OnInit {
     private platform: Platform,
     private config: Configure,
     private encrypt: Encrypt,
-    private screening: Screening
+    private screening: Screening,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController
   ) {
     this.isAndroid = this.platform.is('android');
     this.localStorage = new Storage(LocalStorage);
@@ -64,55 +66,55 @@ export class ScreeningPage implements OnInit {
 
   ngOnInit() {
 
-     let loading = Loading.create({
+     let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+     loading.present();
     
-    let secretKey = this.config.getSecretKey();
-    let url = `${this.url}/api/screening/history`;
+     let secretKey = this.config.getSecretKey();
+      let url = `${this.url}/api/screening/history`;
   
-    this.localStorage.get('token')
-      .then(token => {
-        let _token = token;
-        this.screening.getHistory(url, _token)
-          .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+      this.localStorage.get('token')
+        .then(token => {
+          let _token = token;
+          this.screening.getHistory(url, _token)
+            .then(data => {
+              let decryptText = this.encrypt.decrypt(data);
+              let jsonData = JSON.parse(decryptText);
 
-            // console.log(jsonData);
+              // console.log(jsonData);
 
-            let rows = <httpData>jsonData;
-            let footHistory = <footResult>rows.foot;
-            let eyeHistory = <eyeResult>rows.eye;
+              let rows = <httpData>jsonData;
+              let footHistory = <footResult>rows.foot;
+              let eyeHistory = <eyeResult>rows.eye;
 
-            if (footHistory) {
-              this.footScreenDate = `${moment(footHistory.screen_date).format('D/M')}/${moment(footHistory.screen_date).get('year') + 543}`;
-              this.footScreenTime = moment(footHistory.screen_time, 'HH:mm:ss').format('HH:mm');
-              this.footLeftResult = footHistory.foot_left_result;
-              this.footRightResult = footHistory.foot_right_result;
-            }            
-            // console.log(rows);  
-            if (eyeHistory) {
-              this.eyeScreenDate = `${moment(eyeHistory.screen_date).format('D/M')}/${moment(eyeHistory.screen_date).get('year') + 543}`;
-              this.eyeScreenTime = moment(eyeHistory.screen_time, 'HH:mm:ss').format('HH:mm');
-              this.eyeLeftResult = eyeHistory.eye_left_result;
-              this.eyeRightResult = eyeHistory.eye_right_result;
-            }
+              if (footHistory) {
+                this.footScreenDate = `${moment(footHistory.screen_date).format('D/M')}/${moment(footHistory.screen_date).get('year') + 543}`;
+                this.footScreenTime = moment(footHistory.screen_time, 'HH:mm:ss').format('HH:mm');
+                this.footLeftResult = footHistory.foot_left_result;
+                this.footRightResult = footHistory.foot_right_result;
+              }
+              // console.log(rows);  
+              if (eyeHistory) {
+                this.eyeScreenDate = `${moment(eyeHistory.screen_date).format('D/M')}/${moment(eyeHistory.screen_date).get('year') + 543}`;
+                this.eyeScreenTime = moment(eyeHistory.screen_time, 'HH:mm:ss').format('HH:mm');
+                this.eyeLeftResult = eyeHistory.eye_left_result;
+                this.eyeRightResult = eyeHistory.eye_right_result;
+              }
    
-            loading.dismiss();
-          }, err => {
-            loading.dismiss();
-            let toast = Toast.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
+              loading.dismiss();
+            }, err => {
+              loading.dismiss();
+              let toast = this.toastCtrl.create({
+                message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
+                duration: 3000,
+                position: 'top'
+              });
 
-            this.nav.present(toast);
-          });
-      });
+              toast.present();
+            });
+        });
         
 
   }

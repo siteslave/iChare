@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -26,18 +26,20 @@ export class AllergyPage implements OnInit {
     private nav: NavController,
     private encrypt: Encrypt,
     private config: Configure,
-    private allergy: Allergy
+    private allergy: Allergy,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.localStorage = new Storage(LocalStorage);
     this.url = config.getUrl();
   }
 
   ngOnInit() {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/allergy/info`;
@@ -67,13 +69,13 @@ export class AllergyPage implements OnInit {
             loading.dismiss();
           }, err => {
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
     

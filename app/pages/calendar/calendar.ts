@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -45,7 +45,9 @@ export class CalendarPage {
     private config: Configure,
     private encrypt: Encrypt,
     private appointment: Appointment,
-    private platform: Platform
+    private platform: Platform,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {
     this.url = this.config.getUrl();
     this.localStorage = new Storage(LocalStorage);
@@ -76,12 +78,12 @@ export class CalendarPage {
   };
   
   getData() {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
     this.appointments = [];
-    this.nav.present(loading);
+    loading.present();
 
     this.localStorage.get('token')
       .then(token => {
@@ -134,13 +136,13 @@ export class CalendarPage {
           }, err => {
             loading.dismiss();
             // this.refresher.complete(); 
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
   }

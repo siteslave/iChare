@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, Loading, Toast, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -31,7 +31,9 @@ export class DashPage implements OnInit {
     private nav: NavController,
     private config: Configure,
     private encrypt: Encrypt,
-    private dashboard: Dashboard
+    private dashboard: Dashboard,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) { 
     this.url = this.config.getUrl();
     this.localStorage = new Storage(LocalStorage);
@@ -58,11 +60,12 @@ export class DashPage implements OnInit {
   }
 
   ionViewLoaded() {
-    let loading = Loading.create({
+    let loading = this.loadingCtrl.create({
       content: 'Please wait...'
     });
 
-    this.nav.present(loading);
+    loading.present();
+
     let url = `${this.url}/api/dash/screening`;
   
     this.localStorage.get('token')
@@ -82,13 +85,13 @@ export class DashPage implements OnInit {
             loading.dismiss();
           }, err => {
             loading.dismiss();
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
               message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
               duration: 3000,
               position: 'top'
             });
 
-            this.nav.present(toast);
+            toast.present();
           });
       });
   }
