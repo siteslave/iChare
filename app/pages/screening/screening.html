@@ -1,0 +1,60 @@
+
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>ประวัติตรวจ ตา/เท้า</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-icon name="eye" primary></ion-icon>
+      ประวัติตรวจตา (ล่าสุด)
+    </ion-list-header>
+    <ion-item>
+      วันที่ตรวจ
+      <ion-note item-right>
+      {{ eyeScreenDate }} {{ eyeScreenTime }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      ด้านซ้าย
+      <ion-note item-right>
+      {{ eyeLeftResult }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      ด้านขวา
+      <ion-note item-right>
+      {{ eyeRightResult }}
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-icon name="walk" primary></ion-icon>
+      ประวัติตรวจเท้า (ล่าสุด)
+    </ion-list-header>
+    <ion-item>
+      วันที่ตรวจ
+      <ion-note item-right>
+      {{ footScreenDate }} {{ footScreenTime }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      ด้านซ้าย
+      <ion-note item-right>
+      {{ footLeftResult }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      ด้านขวา
+      <ion-note item-right>
+      {{ footRightResult }}
+      </ion-note>
+    </ion-item>
+  </ion-list>
+</ion-content>

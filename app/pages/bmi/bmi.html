@@ -1,0 +1,64 @@
+
+<ion-header>
+  <ion-navbar primary>
+    <ion-title>Weight/BMI</ion-title>
+    <!--<ion-buttons end>
+      <button>
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>-->
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="bmi">
+  <ion-card>
+    <ion-list>
+        <ion-list-header>
+          HISTORY/GRAPH (ปัดเพื่อดูกราฟ)
+        </ion-list-header>
+      </ion-list>
+      <ion-slides pager>
+
+        <ion-slide>
+          <ion-list>
+            <ion-item-group *ngFor="let item of bmiData">
+              <ion-item-divider>
+                <strong>{{item.vstdate}} {{item.vsttime}} น.</strong>
+              </ion-item-divider>
+              <ion-item>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col width-50>
+                      <div style="text-align: center;">
+                        <span style="line-height: 10%; font-weight: bold; color: grey;">WEIGHT</span>
+                        <h1 style="font-size: 50px; font-weight: bold;" teal>{{item.bw}}</h1>
+                        <span style="line-height: 10%; color: grey;">kg</span>
+                      </div>
+                    </ion-col>
+                    <ion-col width-50>
+                      <div style="text-align: center;">
+                        <span style="line-height: 10%; font-weight: bold; color: grey;">BMI</span>
+                        <h1 style="font-size: 50px; font-weight: bold;" danger>{{item.bmi}}</h1>
+                        <span style="line-height: 10%; color: grey;"></span>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+            </ion-item-group>
+
+          </ion-list>
+        </ion-slide>
+        <ion-slide>
+          <ion-row>
+            <ion-col center text-center>
+              <chart style="display: block;" [options]="optionBmi"></chart>
+            </ion-col>
+          </ion-row>
+        </ion-slide>
+
+      </ion-slides>
+
+  </ion-card>
+
+</ion-content>

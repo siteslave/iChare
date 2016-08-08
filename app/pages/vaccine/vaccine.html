@@ -1,0 +1,25 @@
+
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>การรับวัคซีน</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-icon name="calendar" primary></ion-icon>
+      ประวัติรับวัคซีน
+    </ion-list-header>
+    <ion-item *ngIf="!hasData">
+      <h2>ไม่พบประวัติรับวัคซีน</h2>
+    </ion-item>
+    <ion-item *ngFor="let item of vaccines">
+      <h2>{{ item.vaccine_code }} - {{item.vaccine_name }}</h2>
+      <p>{{ item.vstdate }} เวลา {{ item.vsttime }} น.</p>
+      <!--<ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>-->
+    </ion-item>
+  </ion-list>
+</ion-content>

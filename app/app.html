@@ -1,0 +1,49 @@
+<!--<ion-menu id="loggedInMenu" [content]="content">
+  <ion-header>
+    <ion-toolbar primary>
+      <ion-buttons start>
+        <button menuClose>
+          <ion-icon name="close"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content style="top: 45px;">
+    <ion-list>
+      <ion-list-header>
+        Main Menu
+      </ion-list-header>
+      <button ion-item>
+        <ion-icon danger large item-left name="help-circle"></ion-icon>
+        <strong>Privacy</strong>
+        <p>ข้อตกลงการใช้โปรแกรม</p>
+      </button>
+      <button ion-item (click)="openPage()" menuClose>
+        <ion-icon primary large item-left name="contact"></ion-icon>
+        <strong>About</strong>
+        <p>เกี่ยวกับโปรแกรม</p>
+      </button>
+      <button ion-item>
+        <ion-icon large item-left name="log-out"></ion-icon>
+        <strong>Logout</strong>
+        <p>ออกจากโปรแกรม</p>
+      </button>
+
+    </ion-list>
+    <ion-list>
+      <ion-list-header>
+        Other Menu
+      </ion-list-header>
+      <button ion-item menuClose>
+        <ion-icon danger large item-left name="close-circle"></ion-icon>
+        <strong>Close menu</strong>
+        <p>ปิดเมนู</p>
+      </button>
+    </ion-list>
+
+  </ion-content>
+
+</ion-menu>-->
+
+<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>

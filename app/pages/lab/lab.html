@@ -1,0 +1,165 @@
+<!--
+  Generated template for the LabPage page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>ผลตรวจ LAB</ion-title>
+
+    <ion-buttons end>
+      <button>
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-slides pager>
+    <ion-slide>
+      <ion-item>
+        <ion-row>
+        <!--<ion-col width-33>
+          <ion-icon style="font-size: 60px;" name="speedometer" teal></ion-icon>
+        </ion-col>-->
+        <ion-col>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">eGFR</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{currentGfr}}</h1>
+            <span style="line-height: 40%; color: grey;">ml/min</span>
+          </div>
+        </ion-col>
+        <ion-col>
+          <div style="text-align: center;">
+
+            <span style="line-height: 40%; font-weight: bold; color: grey;">STAGE</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{ currentGfrStage }}</h1>
+            <span style="line-height: 40%; color: grey;">stage</span>
+          </div>
+        </ion-col>
+      </ion-row>
+      </ion-item>
+      <chart style="display: block;" [options]="optionEGfr"></chart>
+    </ion-slide>
+    <ion-slide>
+      <ion-item>
+        <ion-row>
+        <!--<ion-col width-33>
+          <ion-icon style="font-size: 60px;" name="speedometer" teal></ion-icon>
+        </ion-col>-->
+        <ion-col>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">FBS</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{currentFbs}}</h1>
+            <span style="line-height: 40%; color: grey;">mg%</span>
+          </div>
+        </ion-col>
+      </ion-row>
+      </ion-item>
+      <chart style="display: block;" [options]="optionFBS"></chart>
+    </ion-slide>
+    <ion-slide>
+      <ion-item>
+        <ion-row>
+        <!--<ion-col width-33>
+          <ion-icon style="font-size: 60px;" name="speedometer" teal></ion-icon>
+        </ion-col>-->
+        <ion-col>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">TC</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{currentTc}}</h1>
+            <span style="line-height: 40%; color: grey;">mg/dL</span>
+          </div>
+        </ion-col>
+        <!--<ion-col width-33>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">STAGE</span>
+            <h1 style="font-size: 30px; font-weight: bold;" danger>5</h1>
+            <span style="line-height: 40%; color: grey;">stage</span>
+          </div>
+        </ion-col>-->
+      </ion-row>
+      </ion-item>
+      <chart style="display: block;" [options]="optionTc"></chart>
+    </ion-slide>
+    <ion-slide>
+      <ion-item>
+        <ion-row>
+        <!--<ion-col width-33>
+          <ion-icon style="font-size: 60px;" name="speedometer" teal></ion-icon>
+        </ion-col>-->
+        <ion-col>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">HDL</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{currentHdl}}</h1>
+            <span style="line-height: 40%; color: grey;">mg/dL</span>
+          </div>
+        </ion-col>
+        <!--<ion-col width-33>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">STAGE</span>
+            <h1 style="font-size: 30px; font-weight: bold;" danger>5</h1>
+            <span style="line-height: 40%; color: grey;">stage</span>
+          </div>
+        </ion-col>-->
+      </ion-row>
+      </ion-item>
+      <chart style="display: block;" [options]="optionHdl"></chart>
+    </ion-slide>
+    <ion-slide>
+      <ion-item>
+        <ion-row>
+        <!--<ion-col width-33>
+          <ion-icon style="font-size: 60px;" name="speedometer" teal></ion-icon>
+        </ion-col>-->
+        <ion-col>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">HbA1c</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{currentHbA1c}}</h1>
+            <span style="line-height: 40%; color: grey;">mg%</span>
+          </div>
+        </ion-col>
+        <!--<ion-col width-33>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">STAGE</span>
+            <h1 style="font-size: 30px; font-weight: bold;" danger>5</h1>
+            <span style="line-height: 40%; color: grey;">stage</span>
+          </div>
+        </ion-col>-->
+      </ion-row>
+      </ion-item>
+      <chart style="display: block;" [options]="optionHbA1c"></chart>
+    </ion-slide>
+    <ion-slide>
+      <ion-item>
+        <ion-row>
+        <!--<ion-col width-33>
+          <ion-icon style="font-size: 60px;" name="speedometer" teal></ion-icon>
+        </ion-col>-->
+        <ion-col>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">Creatinine</span>
+            <h1 style="font-size: 30px; font-weight: bold;" teal>{{currentCretinine}}</h1>
+            <span style="line-height: 40%; color: grey;">mg/dL</span>
+          </div>
+        </ion-col>
+        <!--<ion-col width-33>
+          <div style="text-align: center;">
+            <span style="line-height: 40%; font-weight: bold; color: grey;">STAGE</span>
+            <h1 style="font-size: 30px; font-weight: bold;" danger>5</h1>
+            <span style="line-height: 40%; color: grey;">stage</span>
+          </div>
+        </ion-col>-->
+      </ion-row>
+      </ion-item>
+      <chart style="display: block;" [options]="optionCretinine"></chart>
+    </ion-slide>
+   
+  </ion-slides>
+
+  
+</ion-content>

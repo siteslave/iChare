@@ -1,0 +1,52 @@
+
+<ion-header>
+  <ion-navbar primary>
+    <ion-title>อัตราเต้นของหัวใจ</ion-title>
+    <!--<ion-buttons end>
+      <button>
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>-->
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="pulse">
+  <ion-card>
+    <ion-list>
+        <ion-list-header>
+          HISTORY/GRAPH (ปัดเพื่อดูกราฟ)
+        </ion-list-header>
+      </ion-list>
+      <ion-slides pager>
+
+        <ion-slide>
+          <ion-list no-lines *ngFor="let item of pulseData">
+            <ion-list-header>{{item.vstdate}} {{item.vsttime}} น.</ion-list-header>
+            <ion-item>
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <div style="text-align: center;">
+                      <span style="line-height: 10%; font-weight: bold; color: grey;">PULSE</span>
+                      <h1 style="font-size: 30px; font-weight: bold;" teal>{{item.pulse}}</h1>
+                      <span style="line-height: 10%; color: grey;">ครั้ง/นาที</span>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          </ion-list>
+        </ion-slide>
+        <ion-slide>
+          <ion-row>
+            <ion-col center text-center>
+              <chart style="display: block;" [options]="optionPulse"></chart>
+            </ion-col>
+          </ion-row>
+        </ion-slide>
+
+      </ion-slides>
+
+  </ion-card>
+
+</ion-content>

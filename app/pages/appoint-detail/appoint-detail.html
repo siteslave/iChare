@@ -1,0 +1,47 @@
+
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>รายละเอียดการนัด</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-item-group>
+    <ion-item-divider>
+      รายละเอียดการนัดหมาย
+    </ion-item-divider>
+    <ion-item>
+      <h2>วันที่/เวลา</h2>
+      <ion-note item-right>
+        {{nextdate}} {{nexttime}} น.
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <h2>แพทย์ผู้นัด</h2>
+      <ion-note item-right>
+        {{doctor_name}}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <h2>แผนก</h2>
+      <ion-note item-right>
+        {{department}}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <h2>คลินิก</h2>
+      <ion-note item-right>
+        {{clinic_name}}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <h2>จุดติดต่อ</h2>
+      <ion-note item-right>
+        {{contact_point}}
+      </ion-note>
+    </ion-item>
+      
+  </ion-item-group>
+</ion-content>

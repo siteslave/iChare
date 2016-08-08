@@ -1,177 +1,124 @@
-<!--
-  Generated template for the DashPage page.
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
--->
-<ion-navbar *navbar primary>
-  <ion-title>ACTIVITIES</ion-title>
-</ion-navbar>
+<ion-header>
+  <ion-navbar primary>
+    <!--<button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>-->
+    <ion-title>กิจกรรม</ion-title>
+    <ion-buttons end>
+      <button (click)="openScreenNote()">
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
 
 <ion-content class="dash">
 
- 
-<ion-card>
-
-<ion-list no-lines>
-      <ion-list-header>
-        BODY WEIGHT
-      </ion-list-header>
-
-    </ion-list>
-
-
-  <ion-card-content>
-    <ion-row>
-        <ion-col width-33>
-          <ion-icon style="font-size: 75px;" name="speedometer" teal></ion-icon>
-        </ion-col>
-        <ion-col width-33>
-          <div style="text-align: center;">
-
-            <span style="line-height: 40%; font-weight: bold; color: grey;">WEIGHIT</span> 
-            <h1 style="font-size: 30px; font-weight: bold;" teal>90</h1>
-            <span style="line-height: 40%; color: grey;">Kg</span>
-          </div>
-        </ion-col>
-        <ion-col width-33>
-          <div style="text-align: center;">
-
-            <span style="line-height: 40%; font-weight: bold; color: grey;">BMI</span> 
-            <h1 style="font-size: 30px; font-weight: bold;" danger>22.5</h1>
-            <span style="line-height: 40%; color: grey;">kg/m</span>
-          </div>
-        </ion-col>
-      </ion-row>
+  <ion-list no-lines>
+    <ion-item-group>
+      <ion-item-divider>
+        WEIGHT/BMI
+      </ion-item-divider>
+      <ion-item>
         <ion-row>
-    <ion-col center text-center>
-      <button teal outline small (click)="goBloodPressure()">
-        <ion-icon name="stats"></ion-icon>
-        <div>กราฟ</div>
-      </button>
-    </ion-col>
-    <ion-col center text-center>
-      <button green outline small>
-        <ion-icon name="create"></ion-icon>
-        <span>เพิ่ม</span>
-      </button>
-    </ion-col>
-    <!--<ion-col center text-center>
-      <ion-note>
-        น้ำหนัก/ดัชนีมวลกาย
-      </ion-note>
-    </ion-col>-->
-  </ion-row>
+          <ion-col width-33>
+            <ion-icon style="font-size: 75px;" name="speedometer" teal></ion-icon>
+          </ion-col>
+          <ion-col width-33>
+            <div style="text-align: center;">
 
-  </ion-card-content>
+              <span style="line-height: 40%; font-weight: bold; color: grey;">WEIGHT</span>
+              <h1 style="font-size: 50px; font-weight: bold;" teal>{{ weight }}</h1>
+              <span style="line-height: 40%; color: grey;">Kg</span>
+            </div>
+          </ion-col>
+          <ion-col width-33>
+            <div style="text-align: center;">
 
-</ion-card>
+              <span style="line-height: 40%; font-weight: bold; color: grey;">BMI</span>
+              <h1 style="font-size: 50px; font-weight: bold;" danger>{{ bmi }}</h1>
+              <span style="line-height: 40%; color: grey;"></span>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col center text-center>
+            <button teal outline (click)="goBmi()">
+              <ion-icon name="stats"></ion-icon>
+              <div>กราฟ</div>
+            </button>
+          </ion-col>
 
- <ion-card>
-    <ion-list no-lines>
-      <ion-list-header>
+        </ion-row>
+      </ion-item>
+    </ion-item-group>
+    
+    <ion-item-group>
+      <ion-item-divider>
         BLOOD PRESSURE
-      </ion-list-header>
+      </ion-item-divider>
 
-    </ion-list>
+      <ion-item>
+        <ion-row>
+          <ion-col width-33>
+            <ion-icon style="font-size: 75px;" name="heart" danger></ion-icon>
+          </ion-col>
+          <ion-col width-33>
+            <div style="text-align: center;">
+              <span style="line-height: 10%; font-weight: bold; color: grey;">SYSTOLIC</span>
+              <h1 style="font-size: 50px; font-weight: bold;" teal>{{ bps }}</h1>
+              <span style="line-height: 10%; color: grey;">mm/Hg</span>
+            </div>
+          </ion-col>
+          <ion-col width-33>
+            <div style="text-align: center;">
+              <span style="line-height: 10%; font-weight: bold; color: grey;">DIASTOLIC</span>
+              <h1 style="font-size: 50px; font-weight: bold;" danger>{{ bpd }}</h1>
+              <span style="line-height: 10%; color: grey;">mm/Hg</span>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col center text-center>
+            <button teal outline (click)="goBloodPressure()">
+              <ion-icon name="stats"></ion-icon>
+              <span>กราฟ</span>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-item>
 
-  <ion-card-content>
-    <ion-grid>
-      <ion-row>
-         <ion-col width-33>
-          <ion-icon style="font-size: 75px;" name="heart" danger></ion-icon>
-        </ion-col>
-        <ion-col width-33>
-          <div style="text-align: center;">
-            <span style="line-height: 10%; font-weight: bold; color: grey;">SYSTOLIC</span> 
-            <h1 style="font-size: 30px; font-weight: bold;" teal>120</h1>
-            <span style="line-height: 10%; color: grey;">mm/Hg</span>
-          </div>
-        </ion-col>
-        <ion-col width-33>
-          <div style="text-align: center;">
-            <span style="line-height: 10%; font-weight: bold; color: grey;">DIASTOLIC</span> 
-            <h1 style="font-size: 30px; font-weight: bold;" danger>90</h1>
-            <span style="line-height: 10%; color: grey;">mm/Hg</span>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-    <ion-col center text-center>
-      <button teal outline small>
-        <ion-icon name="stats"></ion-icon>
-        <span>กราฟ</span>
-      </button>
-    </ion-col>
-    <ion-col center text-center>
-      <button green outline small>
-        <ion-icon name="create"></ion-icon>
-        <span>เพิ่ม</span>
-      </button>
-    </ion-col>
+    </ion-item-group>
+    <ion-item-group>
+      <ion-item-divider>
+        PULSE
+      </ion-item-divider>
 
-    <!--<ion-col center text-center>
-      <ion-note>
-        ความดันโลหิต
-      </ion-note>
-    </ion-col>-->
-  </ion-row>
-
-    </ion-grid>
-  </ion-card-content>
-</ion-card>
-
-
- <ion-card>
-    <ion-list no-lines>
-      <ion-list-header>
-        LABORATORY
-      </ion-list-header>
-
-    </ion-list>
-
-  <ion-card-content>
-    <ion-grid>
-      <ion-row>
-        <ion-col width-33>
-          <ion-icon style="font-size: 75px;" name="flask" primary></ion-icon>
-        </ion-col>
-        <ion-col width-33>
-          <div style="text-align: center;">
-            <span style="line-height: 10%; font-weight: bold; color: grey;">LDL</span> 
-            <h1 style="font-size: 30px; font-weight: bold; color: red;">187</h1>
-            <span style="line-height: 10%; color: grey;">mm/Hg</span>
-          </div>
-        </ion-col>
-        <ion-col width-33>
-          <div style="text-align: center;">
-            <span style="line-height: 10%; font-weight: bold; color: grey;">HDL</span> 
-            <h1 style="font-size: 30px; font-weight: bold; color: red;">200</h1>
-            <span style="line-height: 10%; color: grey;">bpm</span>
-          </div>
-        </ion-col>
-      </ion-row>
-       <ion-row>
-    <ion-col center text-center>
-      <button teal outline small>
-        <ion-icon name="stats"></ion-icon>
-        <span>กราฟ</span>
-      </button>
-    </ion-col>
-    <ion-col center text-center>
-      <button danger outline small ng-disabled="true">
-        <ion-icon name="create"></ion-icon>
-        <span>เพิ่ม</span>
-      </button>
-    </ion-col>
-    <!--<ion-col center text-center>
-      <ion-note>
-        ความดันโลหิต
-      </ion-note>
-    </ion-col>-->
-  </ion-row>
-    </ion-grid>
-  </ion-card-content>
-</ion-card>
+      <ion-item>
+        <ion-row>
+          <ion-col width-33>
+            <ion-icon style="font-size: 75px;" name="pulse" secondary></ion-icon>
+          </ion-col>
+          <ion-col width-33>
+            <div style="text-align: center;">
+              <span style="line-height: 10%; font-weight: bold; color: grey;">PULSE</span>
+              <h1 style="font-size: 50px; font-weight: bold;" teal>{{ pulse }}</h1>
+              <span style="line-height: 10%; color: grey;">ครั้ง/นาที</span>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col center text-center>
+            <button teal outline (click)="goPulse()">
+              <ion-icon name="stats"></ion-icon>
+              <span>กราฟ</span>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-item-group>
+  
+  </ion-list>
 
 </ion-content>

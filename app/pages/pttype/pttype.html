@@ -1,0 +1,69 @@
+
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>สิทธิการรักษา</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+    <ion-list>
+      <ion-list-header>
+        <ion-icon name="medkit" primary></ion-icon>
+        สิทธิการรักษาประจำตัว
+      </ion-list-header>
+
+      <ion-item>
+        สิทธิ์
+        <ion-note item-right>
+        {{ currentPttypeName }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item>
+        เลขที่
+        <ion-note item-right>
+        {{ currentPttypeNo }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item>
+        เริ่มใช้งาน
+        <ion-note item-right>
+        {{ currentBeginDate }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item>
+        หมดอายุ
+        <ion-note item-right>
+        {{ currentExpireDate }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-note item-right>
+        {{ currentHmain }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-note item-right>
+        {{ currentHsub }}
+        </ion-note>
+      </ion-item>
+    </ion-list>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-icon name="calendar" primary></ion-icon>
+      ประวัติการใช้สิทธิ์การรักษา
+    </ion-list-header>
+    <button ion-item *ngFor="let item of historyPttype" (click)="goDetail(item.vn)">
+      <h2>{{ item.pttype_name }}</h2>
+      <p>{{ item.vstdate }} {{ item.vsttime }} น.</p>
+      <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
+    </button>
+  </ion-list>
+</ion-content>

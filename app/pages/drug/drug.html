@@ -1,0 +1,26 @@
+
+<ion-header>
+
+  <ion-navbar primary>
+    <ion-title>วิธีกินยาล่าสุด</ion-title>
+    <!--<ion-buttons end>
+      <button>
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>-->
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>วิธีกินยาล่าสุด</ion-list-header>
+    <ion-item *ngFor="let item of drugs">
+      <h2>{{item.drug_name}}</h2>
+      <p>{{item.name1}}</p>
+      <p>{{item.name2}}</p>
+      <p>{{item.name3}}</p>
+    </ion-item>
+  </ion-list>
+</ion-content>
