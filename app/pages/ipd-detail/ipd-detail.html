@@ -5,8 +5,8 @@
     </ion-title>
   </ion-navbar>
 
-  <ion-toolbar [attr.primary]="isAndroid ? '' : null" no-border-top>
-    <ion-segment [(ngModel)]="menu" [attr.light]="isAndroid ? '' : null">
+  <ion-toolbar no-border-top>
+    <ion-segment [(ngModel)]="menu">
       <ion-segment-button value="Admission">
         ลงทะเบียน
       </ion-segment-button>
@@ -20,63 +20,70 @@
 <ion-content>
   <div [ngSwitch]="menu">
     <ion-list *ngSwitchWhen="'Admission'" no-lines>
-      <ion-item>
-        <h2>วันที่</h2>
-        <ion-note item-right>
-          {{regdate}} {{regtime}} น.
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <h2>ตึกผู้ป่วย</h2>
-        <ion-note item-right>
-          {{ward_name}}
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <h2>อาการ</h2>
-        <ion-note item-right>
-          {{prediag}}
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <h2>สิทธิ์</h2>
-        <ion-note item-right>
-          {{pttype_name}}
-        </ion-note>
-      </ion-item>
-      <ion-item-divider>จำหน่าย</ion-item-divider>
-      <ion-item>
-        <h2>วันจำหน่าย</h2>
-        <ion-note item-right>
-          {{dchdate}} {{dchtime}} น.
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <h2>ประเภท</h2>
-        <ion-note item-right>
-          {{dchstts_name}}
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <h2>สถานะ</h2>
-        <ion-note item-right>
-          {{dchtype_name}}
-        </ion-note>
-      </ion-item>
-      <ion-item-divider>วินิจฉัย</ion-item-divider>
-      <ion-item>
-        <h2>{{diag_name}}</h2>
-      </ion-item>
+      <ion-item-group>
+        <ion-item-divider>ข้อมูลรับบริการ</ion-item-divider>
+        <ion-item>
+          <h2>วันที่</h2>
+          <ion-note item-right>
+            {{regdate}} {{regtime}} น.
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <h2>ตึกผู้ป่วย</h2>
+          <ion-note item-right>
+            {{ward_name}}
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <h2>อาการ</h2>
+          <ion-note item-right>
+            {{prediag}}
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <h2>สิทธิ์</h2>
+          <ion-note item-right>
+            {{pttype_name}}
+          </ion-note>
+        </ion-item>
+        <ion-item-divider>จำหน่าย</ion-item-divider>
+        <ion-item>
+          <h2>วันจำหน่าย</h2>
+          <ion-note item-right>
+            {{dchdate}} {{dchtime}} น.
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <h2>ประเภท</h2>
+          <ion-note item-right>
+            {{dchstts_name}}
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <h2>สถานะ</h2>
+          <ion-note item-right>
+            {{dchtype_name}}
+          </ion-note>
+        </ion-item>
+        <ion-item-divider>วินิจฉัย</ion-item-divider>
+        <ion-item>
+          <h2>{{diag_name}}</h2>
+        </ion-item>
+      </ion-item-group>
+     
     </ion-list>
 
     <ion-list *ngSwitchWhen="'Drug'">
-      <ion-item-divider>รายการยากลับบ้าน</ion-item-divider>
-      <ion-item *ngFor="let item of drugs">
-        <h2>{{item.drug_name}} - {{ item.qty }} {{ item.units }}</h2>
-        <p>{{item.name1}}</p>
-        <p>{{item.name2}}</p>
-        <p>{{item.name3}}</p>
-      </ion-item>
+      <ion-item-group>
+        <ion-item-divider>รายการยากลับบ้าน</ion-item-divider>
+        <ion-item *ngFor="let item of drugs">
+          <h2>{{item.drug_name}} - {{ item.qty }} {{ item.units }}</h2>
+          <p>{{item.name1}}</p>
+          <p>{{item.name2}}</p>
+          <p>{{item.name3}}</p>
+        </ion-item>
+      </ion-item-group>
+      
     </ion-list>
    
   </div>

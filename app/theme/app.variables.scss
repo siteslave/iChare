@@ -25,8 +25,19 @@
 // Both iOS and MD colors can be further customized if colors
 // are different per mode.
 
+// $colors: (
+//   primary:    #01579B,
+//   secondary:  #FF4081,
+//   danger:     #f53d3d,
+//   light:      #B6B6B6,
+//   dark:       #222,
+//   favorite:   #69BB7B,
+//   orange:     #E65100,
+//   green:      #4CAF50,
+//   teal:       #009688
+// );
 $colors: (
-  primary:    #01579B,
+  primary:    #0277BD,
   secondary:  #FF4081,
   danger:     #f53d3d,
   light:      #B6B6B6,

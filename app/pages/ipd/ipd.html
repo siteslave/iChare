@@ -8,19 +8,18 @@
 
 </ion-header>
 
-
 <ion-content>
 
 <ion-list>
-  <ion-list-header>
-    Admission
-  </ion-list-header>
-  <button ion-item *ngFor="let item of admissions" (click)="goIpdDetail(item.an)">
-    <h2>วันที่: {{ item.regdate }} {{item.regtime}} น.</h2>
-    <p>ตึก: {{ item.ward_name }}</p>
-    <p>อาการ: {{ item.prediag }}</p>
-    <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
-  </button>
+  <ion-item-group>
+    <ion-item-divider>Admission</ion-item-divider>
+    <button ion-item *ngFor="let item of admissions" (click)="goIpdDetail(item.an)">
+      <h2>วันที่: {{ item.regdate }} {{item.regtime}} น.</h2>
+      <p>ตึก: {{ item.ward_name }}</p>
+      <p>อาการ: {{ item.prediag }}</p>
+      <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
+    </button>
+  </ion-item-group>
 </ion-list>
 
 </ion-content>
