@@ -15,22 +15,20 @@ import * as cryptojs from 'crypto-js';
 @Injectable()
 export class Encrypt {
   data: any;
-  secretKey: string;
 
   constructor(private http: Http, private config: Configure) {
     this.data = null;
-    this.secretKey = this.config.getSecretKey();
   }
 
-  decrypt(encryptKey) {
-    let bytes  = cryptojs.AES.decrypt(encryptKey.toString(), this.secretKey);
+  decrypt(encryptKey: any, sessionKey: string) {
+    let bytes  = cryptojs.AES.decrypt(encryptKey.toString(), sessionKey);
     let decrypt = bytes.toString(cryptojs.enc.Utf8);
 
     return decrypt;
   }
 
-  encrypt(data: Object) {
-    let encrypted = cryptojs.AES.encrypt(JSON.stringify(data), this.secretKey);
+  encrypt(data: Object, sessionKey: string) {
+    let encrypted = cryptojs.AES.encrypt(JSON.stringify(data), sessionKey);
     return encrypted.toString();
   }
 

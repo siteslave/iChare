@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, NavParams, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, NavParams } from 'ionic-angular';
+import {SecureStorage, SpinnerDialog, Toast} from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -18,7 +19,6 @@ export class OutPatientDetailPage implements OnInit {
   menu: string = "Screening";
   isAndroid: boolean = false;
   url: any;
-  localStorage: any;
   vstdate: any;
   vsttime: any;
   cc: any;
@@ -35,6 +35,7 @@ export class OutPatientDetailPage implements OnInit {
 
   diags: any;
   drugs: any;
+  secureStorage: SecureStorage;
 
   constructor(
     private nav: NavController,
@@ -42,28 +43,24 @@ export class OutPatientDetailPage implements OnInit {
     private config: Configure,
     private encrypt: Encrypt,
     private opd: Opd,
-    private navParams: NavParams,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private navParams: NavParams
   ) { 
     this.url = this.config.getUrl();
-    this.localStorage = new Storage(LocalStorage);
     this.isAndroid = platform.is('android');
-
     this.vn = this.navParams.get('vn');
+
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare').then(() => { });
+
   };
 
   ngOnInit() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('ประมวลผล', 'กรุณารอซักครู่...');
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/detail`;
   
-    this.localStorage.get('token')
+    this.secureStorage.get('token')
       .then(token => {
         let params = this.encrypt.encrypt({ vn: this.vn });        
         this.opd.getDetail(url, token, params)
@@ -90,17 +87,13 @@ export class OutPatientDetailPage implements OnInit {
             this.pttype_name = screening.pttype_name;
             this.department = screening.department;
            
-
-            loading.dismiss();
+            SpinnerDialog.hide();
+            Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            SpinnerDialog.hide();
+            Toast.show('เกิดข้อผิดพลาด : ' + JSON.stringify(err), '3000', 'center')
+              .subscribe(toast => { });
           });
       });
         

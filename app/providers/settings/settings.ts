@@ -27,7 +27,7 @@ export class Settings {
     })
   }
 
-  setDefault(url, token, params) {
+  setDefault(url, data) {
     this.url = url;
 
     return new Promise((resolve, reject) => {
@@ -35,7 +35,7 @@ export class Settings {
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
 
-      let body = { token: token, params: params };
+      let body = { data: data };
 
       this.http.post(url, body, options)
         .map(res => res.json())

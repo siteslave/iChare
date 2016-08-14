@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, AlertController, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import {Calendar, SecureStorage, Toast, SpinnerDialog, Dialogs } from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -13,6 +14,7 @@ import * as moment from 'moment';
 
 interface AppointData {
   nextdate?: any,
+  trueNextDate?: any,
   nexttime?: any,
   department?: any,
   clinic_name?: any,
@@ -39,6 +41,9 @@ export class CalendarPage {
   appointments: any;
   services: any;
   isAndroid: boolean = false;
+  startDate: Date;
+  calendarOption: Object;
+  secureStorage: SecureStorage;
 
   constructor(
     public nav: NavController,
@@ -47,26 +52,67 @@ export class CalendarPage {
     private appointment: Appointment,
     private platform: Platform,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController
   ) {
     this.url = this.config.getUrl();
     this.localStorage = new Storage(LocalStorage);
     this.isAndroid = this.platform.is('android');
+
+    this.startDate = new Date();
+
+    this.calendarOption = {
+      calendarName: 'iChare',
+      firstReminderMinutes: 24*60 // 1 day
+    };
+
+    this.secureStorage = new SecureStorage();
+
+    this.secureStorage.create('iChare')
+      .then(
+      () => console.log('Storage is ready!'),
+      error => console.log(error)
+      );
+  
+
    }
   
-  doRefresh(refresher) {
-    console.log('Begin async operation', refresher);
-
-    setTimeout(() => {
-      console.log('Async operation has ended');
-      refresher.complete();
-    }, 2000);
-  
-  }
-
   ionViewDidEnter() {
     this.getData();
     // this.getLastVisit();
+  }
+
+  openCalendar() {
+    Calendar.openCalendar(this.startDate);
+  }  
+
+  saveCalendar() {
+    
+    Dialogs.confirm('คุณต้องการนำเข้านัดหมาย ใช่หรือไม่?', 'ยืนยัน', ['ใช่', 'ยกเลิก'])
+      .then(btnIndex => {
+        if (btnIndex == 1) {
+          this.appointments.forEach(v => {
+            // console.log(v);
+            let startDate = moment(v.trueNextDate).format('YYYY-MM-DD');
+            let startTime = moment(v.nexttime, 'HH:mm').format('HH:mm:ss');
+            let trueDate = startDate + ' ' + startTime;
+            // console.log(trueDate);
+
+            let _startDate = new Date(moment(trueDate).format());
+            // console.log(_startDate);
+
+            Calendar.deleteEvent('นัดหมายโรงพยาบาล', v.department, 'คลินิก: ' + v.clinic_name, _startDate, _startDate)
+              .then(result => {
+                return Calendar.createEventWithOptions('นัดหมายโรงพยาบาล', v.department, 'คลินิก: ' + v.clinic_name, _startDate, _startDate, this.calendarOption);
+              })
+              .then(result => {
+                Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(toast => { });
+              });
+            
+          });
+        }
+      });
+    
   }
 
   goAppointDetail(id) {
@@ -78,16 +124,18 @@ export class CalendarPage {
   };
   
   getData() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
+    // let loading = this.loadingCtrl.create({
+    //   content: 'Please wait...'
+    // });
 
     this.appointments = [];
-    loading.present();
+    // loading.present();
+    SpinnerDialog.show('กำลังประมวลผล', 'กรุณารอซักครู่...');
 
-    this.localStorage.get('token')
+    let url = `${this.url}/api/appointment/list`;
+
+    this.secureStorage.get('token')
       .then(token => {
-        let url = `${this.url}/api/appointment/list`;
         this.appointment.getList(url, token)
           .then(data => {
             let decryptText = this.encrypt.decrypt(data);
@@ -97,20 +145,18 @@ export class CalendarPage {
             
             for (let row of rows) {
               let appoint = <AppointData>row;
-              
+              console.log(row);
+              appoint.trueNextDate = row.nextdate;
               appoint.nextdate = `${moment(row.nextdate).format('D/M')}/${moment(row.nextdate).get('year') + 543}`;
               appoint.nexttime = moment(row.nexttime, 'HH:mm:ss').format('HH:mm');
               appoint.department = row.department;
               appoint.clinic_name = row.clinic_name;
               appoint.oapp_id = row.oapp_id;
-
               this.appointments.push(appoint);
             }
 
-            let _url = `${this.url}/api/appointment/lastvisit`;            
+            let _url = `${this.url}/api/appointment/lastvisit`;
             return this.appointment.getLastVisit(_url, token);
-            // this.refresher.complete();            
-            // loading.dismiss();
           })
           .then(dataService => {
             let decryptText = this.encrypt.decrypt(dataService);
@@ -118,7 +164,7 @@ export class CalendarPage {
             let rows = <Array<any>>jsonData;
             this.services = [];
             
-           for (let row of rows) {
+            for (let row of rows) {
               let service = <ServiceData>row;
               
               service.vstdate = `${moment(row.vstdate).format('D/M')}/${moment(row.vstdate).get('year') + 543}`;
@@ -132,19 +178,18 @@ export class CalendarPage {
               this.services.push(service);
             }
 
-            loading.dismiss();
+            SpinnerDialog.hide();    
+            Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(toast => { });
+            // loading.dismiss();
           }, err => {
-            loading.dismiss();
+            SpinnerDialog.hide();
+            // loading.dismiss();
             // this.refresher.complete(); 
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            console.log(err);
+            Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(toast => { });
           });
       });
+
   }
   
 }

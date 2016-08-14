@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
-import {NavController, Storage, LocalStorage} from 'ionic-angular';
+import {NavController} from 'ionic-angular';
 import {Platform} from 'ionic-angular';
+import {SecureStorage} from 'ionic-native';
 
 import {OutPatientPage} from '../out-patient/out-patient';
 import {SettingsPage} from '../settings/settings';
@@ -19,9 +20,8 @@ import {PrivacyPage} from '../privacy/privacy';
   templateUrl: 'build/pages/home/home.html',
 })
 export class HomePage {
-  localStorage: any;
   isAndroid: boolean = false;
-  patientHn: any;
+  secureStorage: SecureStorage;
 
 
   constructor(public nav: NavController, platform: Platform) {

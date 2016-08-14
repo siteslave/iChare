@@ -19,7 +19,7 @@ export class TabsPage {
   tabSettings: any = SettingsPage;
   tabNews: any = NewsPage;
   tabDash: any = DashPage;
-  // @ViewChild('tabMain') tabs: Tabs;
+  
   toast;
   localStorage;
 

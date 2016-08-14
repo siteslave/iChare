@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Camera} from 'ionic-native';
-import {ModalController, ToastController, AlertController, ActionSheetController, LoadingController, Platform, NavController, NavParams, ViewController, Storage, LocalStorage} from 'ionic-angular';
+import {Camera, Toast, SecureStorage, ActionSheet, SpinnerDialog} from 'ionic-native';
+import {ModalController, ToastController, ActionSheetController, AlertController, LoadingController, Platform, NavController, NavParams, ViewController, Storage, LocalStorage} from 'ionic-angular';
 import * as _ from 'lodash';
 
 import {Settings} from '../../providers/settings/settings';
@@ -27,7 +27,8 @@ interface AlertData {
 interface httpData {
   ok: boolean,
   msg?: any,
-  rows?: any
+  rows?: any,
+  data?: Object
 }
 
 @Component({
@@ -38,7 +39,7 @@ interface httpData {
 
 export class SettingsPage implements OnInit {
 
-  localStorage: any;
+  // localStorage: any;
   url: string;
   patients: any;
   token: any;
@@ -46,6 +47,7 @@ export class SettingsPage implements OnInit {
   alertAppoint: boolean = false;
   alertNews: boolean = false;
   alertService: boolean = false;
+  secureStorage: SecureStorage;
 
   constructor(public nav: NavController,
     private config: Configure,
@@ -58,13 +60,21 @@ export class SettingsPage implements OnInit {
     private alertCtrl: AlertController,
     private actionSheetCtrl: ActionSheetController
   ) {
-    this.localStorage = new Storage(LocalStorage);
+    // this.localStorage = new Storage(LocalStorage);
     this.url = this.config.getUrl();
+
+    this.secureStorage = new SecureStorage();
+
+    this.secureStorage.create('iChare')
+      .then(
+      () => console.log('Storage is ready!'),
+      error => console.log(error)
+      );
 
    }
 
   ngOnInit() {
-
+  
   }
 
   ionViewDidEnter() {
@@ -73,135 +83,199 @@ export class SettingsPage implements OnInit {
   }
 
   getPatient() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
+    // let loading = this.loadingCtrl.create({
+    //   content: 'Please wait...'
+    // });
 
     // this.nav.present(loading);
-    loading.present();
+    // loading.present();
 
-    this.localStorage.get('token')
-      .then(token => {
-        this.token = token;
-        let url = `${this.url}/api/patient/members?token=${this.token}`;
-        return this.settings.getMemberPatients(url);
-      })
-      .then(data => {
-        // console.log(data);
-        let encryptedData = data.data;
-        // let secretKey = this.config.getSecretKey();
-        let decryptText = this.encrypt.decrypt(encryptedData);
-        let jsonData = JSON.parse(decryptText);
+    // this.localStorage.get('token')
+    //   .then(token => {
+    //     this.token = token;
+        
+    //     return ;
+    //   })
 
-        let rows = <Array<any>>jsonData;
-        this.patients = [];
+    SpinnerDialog.show('ประมวลผล', 'กำลังโหลดข้อมูล...');
 
-        for (let row of rows) {
-          let data = <PatientData>row;
-          data.age = row.age;
-          data.hash_key = row.hash_key;
-          data.image = row.image;
-          data.is_default = row.is_default;
-          data.ptname = row.ptname;
 
-          this.patients.push(data);
-        }
+    this.secureStorage.get('token')
+      .then(token => { 
+        
+        let url = `${this.url}/api/patient/members?token=${token}`;
+        this.settings.getMemberPatients(url)
+          .then(data => {
+            // console.log(data);
+            let _data = <httpData>data;
+            let encryptedData = _data.data;
+            // let secretKey = this.config.getSecretKey();
 
-        console.log(this.patients);
+            this.secureStorage.get('sessionKey')
+              .then(sessionKey => {
+              
+                let decryptText = this.encrypt.decrypt(encryptedData, sessionKey);
+                let jsonData = JSON.parse(decryptText);
 
-        loading.dismiss();
-      }, err => {
-        let msg = null;
-        if (err) {
-          msg = `Error [${err.status}]: ${err.statusText} `;
-        } else {
-          msg = 'Connection failed';
-        }
-        let alert = this.alertCtrl.create({
-          title: 'เกิดข้อผิดพลาด',
-          subTitle: msg,
-          buttons: ['ตกลง']
-        });
-          // this.nav.present(alert);
-        alert.present();
-      });
+                let rows = <Array<any>>jsonData;
+                this.patients = [];
+
+                for (let row of rows) {
+                  let data = <PatientData>row;
+                  data.age = row.age;
+                  data.hash_key = row.hash_key;
+                  data.image = row.image;
+                  data.is_default = row.is_default;
+                  data.ptname = row.ptname;
+
+                  this.patients.push(data);
+                }
+
+                SpinnerDialog.hide();
+                // loading.dismiss();
+
+                Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(
+                  toast => {
+                    // console.log(toast);
+                  }
+                );
+                
+              });
+
+            
+            
+          }, err => {
+            console.log(err);
+            SpinnerDialog.hide();
+            // loading.dismiss();
+            Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
+            
+          });
+        
+      },
+       error => console.log(error)
+    ); 
+    
   }
 
   setDefault(hashKey) {
 
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
+    // let loading = this.loadingCtrl.create({
+    //   content: 'Please wait...'
+    // });
 
     // this.nav.present(loading);
-    loading.present();
+    // loading.present();
+
+    SpinnerDialog.show('ประมวลผล', 'กำลังดำเนินการ...')
     
     let url = `${this.url}/api/patient/set-default`;
-    let params = this.encrypt.encrypt({ hashKey: hashKey });
 
-    this.settings.setDefault(url, this.token, params)
-      .then(data => {
-        let result = <httpData>data;
-        if (result.ok) {
-          loading.dismiss();
-          this.getPatient();
-        } else {
-          loading.dismiss();
-          let alert = this.alertCtrl.create({
-            title: 'เกิดข้อผิดพลาด',
-            subTitle: result.msg,
-            buttons: ['ตกลง']
+    this.secureStorage.get('sessionKey')
+      .then(sessionKey => {
+
+        
+
+        this.secureStorage.get('token')
+          .then(token => {
+            let data = this.encrypt.encrypt({ hashKey: hashKey, token: token }, sessionKey);
+
+            this.settings.setDefault(url, data)
+              .then(data => {
+                let result = <httpData>data;
+                if (result.ok) {
+                  // loading.dismiss();
+                  SpinnerDialog.hide();
+                  Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(
+                    toast => {
+                      // console.log(toast);
+                    });
+                  this.getPatient();
+                } else {
+                  // loading.dismiss();
+                  SpinnerDialog.hide();
+                  Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+                    toast => {
+                      // console.log(toast);
+                    });
+                  console.log(result.msg);
+                }
+              }, err => {
+                // loading.dismiss();
+                console.log(err);
+                SpinnerDialog.hide();
+                Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+                  toast => {
+                    // console.log(toast);
+                  });
+              });
           });
-          // this.nav.present(alert);
-          alert.present();
-          console.log(result.msg);
-        }
-      }, err => {
-        loading.dismiss();
-        let alert = this.alertCtrl.create({
-          title: 'เกิดข้อผิดพลาด',
-          subTitle: `Error [${err.status}]: ${err.statusText} `,
-          buttons: ['ตกลง']
-        });
-        // this.nav.present(alert);
-        alert.present();
+        
+
       });
+  
+    
   }
 
   // show action sheet
   showTakePhotoAction(hashKey) {
     console.log(hashKey);
-    // let idx = _.findIndex(this.patients, { hn: hn });
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'เลือกที่มาของภาพถ่าย',
-      cssClass:'action-sheets-basic-page',
-      buttons: [
-        {
-          text: 'แกลอรี่',
-          icon: !this.platform.is('ios') ? 'image' : null,
-          // role: 'destructive',
-          handler: () => {
-            this.takePhotoWithGallery(hashKey)
-          }
-        }, {
-          text: 'กล้อง',
-          icon: !this.platform.is('ios') ? 'camera' : null,
-          handler: () => {
-            this.takePhotoWithCamera(hashKey)
-          }
-        }, {
-          text: 'ยกเลิก',
-          // icon: !this.platform.is('ios') ? 'clear' : null,
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        }
-      ]
-    });
 
-  // this.nav.present(actionSheet);
-    actionSheet.present();
+    let buttonLabels = ['แกลอรี่', 'กล้องถ่ายรูป'];
+    ActionSheet.show({
+      'title': 'เลือกที่มาของภาพ?',
+      'buttonLabels': buttonLabels,
+      'androidTheme': 3,
+      'addCancelButtonWithLabel': 'ยกเลิก',
+      'androidEnableCancelButton': true,
+      // 'addDestructiveButtonWithLabel': 'Delete'
+    }).then((buttonIndex: number) => {
+      // console.log('Button pressed: ' + buttonIndex);
+      if (buttonIndex == 1) {
+        this.takePhotoWithGallery(hashKey)
+      } else if (buttonIndex == 2) {
+        this.takePhotoWithCamera(hashKey)
+      } else {
+        // no action
+      }
+      });
+  
+
+
+    // let idx = _.findIndex(this.patients, { hn: hn });
+  //   let actionSheet = this.actionSheetCtrl.create({
+  //     title: 'เลือกที่มาของภาพถ่าย',
+  //     cssClass:'action-sheets-basic-page',
+  //     buttons: [
+  //       {
+  //         text: 'แกลอรี่',
+  //         icon: !this.platform.is('ios') ? 'image' : null,
+  //         // role: 'destructive',
+  //         handler: () => {
+  //           this.takePhotoWithGallery(hashKey)
+  //         }
+  //       }, {
+  //         text: 'กล้อง',
+  //         icon: !this.platform.is('ios') ? 'camera' : null,
+  //         handler: () => {
+  //           this.takePhotoWithCamera(hashKey)
+  //         }
+  //       }, {
+  //         text: 'ยกเลิก',
+  //         // icon: !this.platform.is('ios') ? 'clear' : null,
+  //         role: 'cancel',
+  //         handler: () => {
+  //           console.log('Cancel clicked');
+  //         }
+  //       }
+  //     ]
+  //   });
+
+  // // this.nav.present(actionSheet);
+  //   actionSheet.present();
   }
 
   takePhotoWithCamera(hashKey) {
@@ -227,7 +301,7 @@ export class SettingsPage implements OnInit {
         // alert(JSON.stringify(this.patientData));
         this.savePhoto(hashKey, base64Image);
       }, (err) => {
-        alert(JSON.stringify(err));
+        // alert(JSON.stringify(err));
       });
     });
   }
@@ -255,45 +329,48 @@ export class SettingsPage implements OnInit {
         // alert(JSON.stringify(this.patientData));
         this.savePhoto(hashKey, base64Image);
       }, (err) => {
-        alert(JSON.stringify(err))
+        // alert(JSON.stringify(err))
       });
     });
   }
 
   savePhoto(hashKey, image) {
-    let loading = this.loadingCtrl.create({
-      content: 'Saving...'
-    });
+    // let loading = this.loadingCtrl.create({
+    //   content: 'Saving...'
+    // });
 
     // this.nav.present(loading);
-    loading.present();
+    // loading.present();
 
-    this.localStorage.get('token')
-      .then(token => {
-        let params = this.encrypt.encrypt({ image: image, hashKey: hashKey });
+    SpinnerDialog.show('ประมวลผล', 'กำลังบันทึกรูปภาพ...');
+
+    let params = this.encrypt.encrypt({ image: image, hashKey: hashKey });
     
-        let url = `${this.url}/api/patient/save-photo`;
+    let url = `${this.url}/api/patient/save-photo`;
+
+    this.secureStorage.get('token')
+      .then(token => {
         this.settings.savePhoto(url, token, params)
           .then(() => {
             this.getPatient();
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เรียบร้อย',
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            // loading.dismiss();
+            SpinnerDialog.hide();
+            
+            Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           }, err => {
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'bottom'
-            });
+            SpinnerDialog.hide();
+            console.log(err);
+
+            Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
 
             // this.nav.present(toast);
-            toast.present();
+            // toast.present();
           });
       });
     
@@ -308,99 +385,90 @@ export class SettingsPage implements OnInit {
     // type : 1 = news, 2 = appoint, 3 = service
     let status = this.alertAppoint ? 'Y' : 'N';
     let url = `${this.url}/api/member/toggle-alert`;
-    this.localStorage.get('token')
+    this.secureStorage.get('token')
       .then(token => {
-        console.log(token);
+        SpinnerDialog.show('บันทึก', 'กำลังบันทึก...');
         this.settings.setAlert(url, token, '2', status)
           .then(() => {
-            let toast = this.toastCtrl.create({
-              message: 'เรียบร้อย',
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            
+            SpinnerDialog.hide();
+            Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           }, err => {
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            SpinnerDialog.hide();
+            Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           });
-       });
-
+      });
+  
   }
 
   toggleService() {
     // type : 1 = news, 2 = appoint, 3 = service
     // alert(this.alertAppoint);
-    let status = this.alertAppoint ? 'Y' : 'N';
+    let status = this.alertService ? 'Y' : 'N';
     let url = `${this.url}/api/member/toggle-alert`;
-    this.localStorage.get('token')
+    SpinnerDialog.show('บันทึก', 'กำลังบันทึก...');
+
+    this.secureStorage.get('token')
       .then(token => {
         this.settings.setAlert(url, token, '3', status)
           .then(() => {
-            let toast = this.toastCtrl.create({
-              message: 'เรียบร้อย',
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            SpinnerDialog.hide();
+            Toast.show("บันทึกเสร็จเรียบร้อย", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           }, err => {
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            SpinnerDialog.hide();
+            Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           });
-       });
-
+      });
+    
   }
 
   toggleNews() {
     // type : 1 = news, 2 = appoint, 3 = service
     // alert(this.alertAppoint);
-    let status = this.alertAppoint ? 'Y' : 'N';
+    let status = this.alertNews ? 'Y' : 'N';
     let url = `${this.url}/api/member/toggle-alert`;
-    this.localStorage.get('token')
+
+    SpinnerDialog.show('บันทึก', 'กำลังบันทึก...');
+
+    this.secureStorage.get('token')
       .then(token => {
         this.settings.setAlert(url, token, '1', status)
           .then(() => {
-            let toast = this.toastCtrl.create({
-              message: 'เรียบร้อย',
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            SpinnerDialog.hide();
+            Toast.show("บันทึกเสร็จเรียบร้อย", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           }, err => {
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            SpinnerDialog.hide();
+            console.log(err);
+            Toast.show("เกิดข้อผิดพลาด", '3000', 'center').subscribe(
+              toast => {
+                // console.log(toast);
+              });
           });
-       });
+      });
+    
   }
 
   getAlertSetting() {
 
     let url = `${this.url}/api/member/get-alert-setting`;
-    this.localStorage.get('token')
+    this.secureStorage.get('token')
       .then(token => {
+      
         this.settings.getAlertSetting(url, token)
           .then(alert => {
             let _alert = <AlertData>alert;
@@ -410,16 +478,10 @@ export class SettingsPage implements OnInit {
             this.alertService = _alert.alert_service == 'Y' ? true : false;
 
           }, err => {
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'bottom'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            console.log(err);
           });
-       });
+        
+      });
   }
   
 

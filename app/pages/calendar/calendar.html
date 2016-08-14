@@ -1,20 +1,25 @@
 
 <ion-header>
   <ion-navbar primary>
-    <!--<button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>-->
-    <ion-title>นัดหมาย</ion-title>
+    <ion-buttons end>
+      <button (click)="saveCalendar()">
+        <ion-icon name="download"></ion-icon>
+      </button>
+      <button (click)="openCalendar()">
+        <ion-icon name="calendar"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Appointment</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content class="calendar">
-    <ion-refresher (ionRefresh)="doRefresh($event)">
+    <!--<ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
       pullingIcon="ios-arrow-round-down"
       refreshingSpinner="dots">
     </ion-refresher-content>
-  </ion-refresher>
+  </ion-refresher>-->
 
   <ion-list>
     <ion-item-group>

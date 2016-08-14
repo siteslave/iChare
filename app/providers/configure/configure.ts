@@ -11,19 +11,19 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Configure {
   url: string;
-  secretKey: string;
+  masterKey: string;
 
   constructor() {
-    this.url = `http://localhost:3000`;
-    this.secretKey = '9336bff7d152422e5ca53599bc129142';
+    this.url = `http://192.168.43.76:3000`;
+    this.masterKey = 'd59c2916461236846d375108a07e2fb6ede2800c39fe0e325286282186aa5c42';
   }
 
   getUrl() {
     return this.url;
   }
 
-  getSecretKey() {
-      return this.secretKey;
+  getMasterKey() {
+      return this.masterKey;
   }
   
 }

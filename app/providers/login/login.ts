@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { Observable }     from 'rxjs/Observable';
 
 /*
   Generated class for the Login provider.
@@ -35,7 +36,7 @@ export class Login {
     })
   }
 
-  saveDevicetoken(url, token, params) {
+  saveDevicetoken(url, params) {
     this.url = url;
 
     return new Promise((resolve, reject) => {
@@ -43,9 +44,9 @@ export class Login {
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
       
-       let body = { token: token, params: params };
+       let body = { params: params };
 
-      let url = `${this.url}/api/member/register/device`;
+      let url = `${this.url}/api/login/register/device`;
 
       this.http.post(url, body, options)
         .map(res => res.json())
@@ -58,6 +59,29 @@ export class Login {
         }, error => reject(error))
     })
 
+  }
+
+  getSessionKey(url, params) {
+    this.url = url;
+
+    return new Promise((resolve, reject) => {
+      let headers = new Headers({ 'Content-Type': 'application/json' });
+      let options = new RequestOptions({ headers: headers });
+
+      let body = { params: params };
+
+      let url = `${this.url}/api/login/send/session_key`;
+
+      this.http.post(url, body, options)
+        .map(res => res.json())
+        .subscribe(data => {
+          if (data.ok) {
+            resolve(data.data);
+          } else {
+            reject(data.msg);
+          }
+        }, error => reject(error));
+    })
   }
 }
 

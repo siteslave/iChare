@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+import {SpinnerDialog, Toast, SecureStorage} from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -25,22 +26,23 @@ interface ServiceResult {
 export class OutPatientPage implements OnInit {
   isAndroid: boolean = false;
   url: any
-  localStorage: any;
   services: any;
   refresher: any;
+  secureStorage: SecureStorage;
 
   constructor(
     private nav: NavController,
     private platform: Platform,
     private encrypt: Encrypt,
     private config: Configure,
-    private opd: Opd,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private opd: Opd
   ) {
     this.url = this.config.getUrl();
-    this.localStorage = new Storage(LocalStorage);
     this.isAndroid = platform.is('android');
+
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare').then(() => { });
+    
   }
 
   gotoDetail(vn) {
@@ -48,16 +50,10 @@ export class OutPatientPage implements OnInit {
   }
 
   doRefresh(refresher) {
-    //console.log('Begin async operation', refresher);
-
-    // setTimeout(() => {
-    //   console.log('Async operation has ended');
-    //   refresher.complete();
-    // }, 2000);
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/history`;
   
-    this.localStorage.get('token')
+    this.secureStorage.get('token')
       .then(token => {
         let _token = token;
         this.services = [];
@@ -81,16 +77,13 @@ export class OutPatientPage implements OnInit {
             }
 
             refresher.complete();
+            Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
             refresher.complete();
             this.refresher.complete();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            Toast.show('เกิดข้อผิดพลาด: ' + JSON.stringify(err) , '3000', 'center')
+              .subscribe(toast => { });
           });
       });
 
@@ -105,16 +98,12 @@ export class OutPatientPage implements OnInit {
   }
 
   getData() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('ประมวลผล', 'กรุณารอซักครู่...');
     
     let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/history`;
   
-    this.localStorage.get('token')
+    this.secureStorage.get('token')
       .then(token => {
         let _token = token;
         this.services = [];
@@ -137,18 +126,14 @@ export class OutPatientPage implements OnInit {
               this.services.push(service);
             }
 
-            // this.refresher.complete();            
-            loading.dismiss();
+            SpinnerDialog.hide();
+            Toast.show('เสร็จเรียบร้อย' , '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
-            loading.dismiss();
+            SpinnerDialog.hide();
             this.refresher.complete(); 
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            Toast.show('เกิดข้อผิดพลาด: ' + JSON.stringify(err) , '3000', 'center')
+              .subscribe(toast => { });
           });
       });
   }

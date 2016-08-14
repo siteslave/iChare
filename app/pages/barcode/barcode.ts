@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ModalController, Platform, NavController, NavParams, ViewController, LocalStorage, Storage} from 'ionic-angular';
 
+import { BarcodeScanner } from 'ionic-native';
+
 import {Settings} from '../../providers/settings/settings';
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -38,7 +40,7 @@ export class BarcodePage implements OnInit {
   }
 
   ngOnInit() {
-    
+
     this.hashKey = this.navParams.get('hashKey'); 
 
     this.url = this.config.getUrl();
