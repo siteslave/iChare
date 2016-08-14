@@ -9,6 +9,13 @@ import {Opd} from '../../providers/opd/opd';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
 @Component({
   templateUrl: 'build/pages/out-patient-detail/out-patient-detail.html',
   providers: [Encrypt, Configure, Opd]
@@ -36,6 +43,7 @@ export class OutPatientDetailPage implements OnInit {
   diags: any;
   drugs: any;
   secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
@@ -55,21 +63,24 @@ export class OutPatientDetailPage implements OnInit {
   };
 
   ngOnInit() {
-    SpinnerDialog.show('ประมวลผล', 'กรุณารอซักครู่...');
+    SpinnerDialog.show('', 'กรุณารอซักครู่...');
     
-    let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/detail`;
   
-    this.secureStorage.get('token')
-      .then(token => {
-        let params = this.encrypt.encrypt({ vn: this.vn });        
-        this.opd.getDetail(url, token, params)
+    this.secureStorage.get('data')
+      .then(sessionData => {
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token, vn: this.vn };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+             
+        this.opd.getDetail(url, this.sessionData.memberId, _encryptedParams)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
             let rows = jsonData;
 
-            console.log(rows);
             let screening = rows.screening;
             this.diags = rows.diag;
             this.drugs = rows.drug;

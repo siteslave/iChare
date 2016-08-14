@@ -92,7 +92,7 @@ export class LoginPage {
     
     // loading.present();
 
-    SpinnerDialog.show('Login', 'Please wait...');
+    SpinnerDialog.show('', 'กรุณารอซักครู่...');
     let _encryptedParams = this.encrypt.encrypt({ username: this.username, password: this.password }, this.masterKey)
     
     this.login.login(url, _encryptedParams)
@@ -115,7 +115,7 @@ export class LoginPage {
             windows: {}
           });
 
-          SpinnerDialog.show('Registration', 'Registering device...');
+          SpinnerDialog.show('', 'Registering device...');
 
           push.on('registration', (res) => {
             let _encryptedParams = this.encrypt.encrypt({ deviceToken: res.registrationId, memberId: result.memberId }, this.masterKey)
@@ -125,7 +125,7 @@ export class LoginPage {
                 this.login.getSessionKey(url, _sessionParams)
                   .then(_res => {
                     SpinnerDialog.hide();
-                    SpinnerDialog.show('Session key', 'Wating for Session Key...');
+                    SpinnerDialog.show('', 'Wating for Session Key...');
                   });
               });
           });
@@ -137,7 +137,6 @@ export class LoginPage {
             if (additionalData.key) {
               SpinnerDialog.hide();
               this.nav.setRoot(WelcomePage, { params: data.additionalData });
-
             } else {
               SpinnerDialog.hide();
               console.log('No action for session key');

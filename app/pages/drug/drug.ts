@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+import {SpinnerDialog, Toast, SecureStorage} from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -18,53 +19,57 @@ interface rowResults {
   name3?: any
 }
 
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
 @Component({
   templateUrl: 'build/pages/drug/drug.html',
   providers: [Encrypt, Configure, Drug]
 })
 export class DrugPage implements OnInit {
   url;
-  localStorage;
   drugs;
+  secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
     private config: Configure,
     private encrypt: Encrypt,
-    private drug: Drug,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private drug: Drug
   ) {
 
     this.url = this.config.getUrl();
-    this.localStorage = new Storage(LocalStorage);    
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });    
   }
 
   ngOnInit() {
 
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('', 'กรุณารอซักครู่...')
     
-    let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/drug/history`;
   
-    this.localStorage.get('token')
-      .then(token => {
-        this.drugs = [];
-        let _token = token;
-        this.drug.getHistory(url, _token)
-          .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+    this.secureStorage.get('data')
+      .then(sessionData => {
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
 
-            // console.log(jsonData);
+        this.drugs = [];
+        this.drug.getHistory(url, this.sessionData.memberId, _encryptedParams)
+          .then(data => {
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
 
             let rows = jsonData;
-
-            // console.log(rows);
 
             for (let row of rows) {
               let drugData = <rowResults>row;
@@ -79,18 +84,14 @@ export class DrugPage implements OnInit {
               this.drugs.push(drugData);
             }
             
-            // console.log(this.drugs);
-
-            loading.dismiss();
+            SpinnerDialog.hide();
+            Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            console.log(err);
+            SpinnerDialog.hide();
+            Toast.show('เกิดข้อผิดพลาด', '3000', 'center')
+              .subscribe(toast => { });
           });
       });
         

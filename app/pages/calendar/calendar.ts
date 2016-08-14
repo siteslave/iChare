@@ -12,6 +12,13 @@ import {AppointServiceDetailPage} from '../appoint-service-detail/appoint-servic
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
 interface AppointData {
   nextdate?: any,
   trueNextDate?: any,
@@ -44,6 +51,7 @@ export class CalendarPage {
   startDate: Date;
   calendarOption: Object;
   secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     public nav: NavController,
@@ -56,7 +64,6 @@ export class CalendarPage {
     private alertCtrl: AlertController
   ) {
     this.url = this.config.getUrl();
-    this.localStorage = new Storage(LocalStorage);
     this.isAndroid = this.platform.is('android');
 
     this.startDate = new Date();
@@ -67,14 +74,8 @@ export class CalendarPage {
     };
 
     this.secureStorage = new SecureStorage();
-
     this.secureStorage.create('iChare')
-      .then(
-      () => console.log('Storage is ready!'),
-      error => console.log(error)
-      );
-  
-
+      .then(() => { });
    }
   
   ionViewDidEnter() {
@@ -130,16 +131,24 @@ export class CalendarPage {
 
     this.appointments = [];
     // loading.present();
-    SpinnerDialog.show('กำลังประมวลผล', 'กรุณารอซักครู่...');
+    SpinnerDialog.show('', 'กรุณารอซักครู่...');
 
     let url = `${this.url}/api/appointment/list`;
 
-    this.secureStorage.get('token')
-      .then(token => {
-        this.appointment.getList(url, token)
+    this.secureStorage.get('data')
+      .then(sessionData => {
+
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+
+        this.appointment.getList(url, this.sessionData.memberId, _encryptedParams)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
+
             let rows = <Array<any>>jsonData;
             // console.log(rows);
             
@@ -156,12 +165,14 @@ export class CalendarPage {
             }
 
             let _url = `${this.url}/api/appointment/lastvisit`;
-            return this.appointment.getLastVisit(_url, token);
+            return this.appointment.getLastVisit(_url, this.sessionData.memberId, _encryptedParams);
           })
-          .then(dataService => {
-            let decryptText = this.encrypt.decrypt(dataService);
-            let jsonData = JSON.parse(decryptText);
+          .then(data => {
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
             let rows = <Array<any>>jsonData;
+            
             this.services = [];
             
             for (let row of rows) {

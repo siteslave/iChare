@@ -1,11 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, NavParams, Platform } from 'ionic-angular';
+import { SecureStorage, Toast, SpinnerDialog } from 'ionic-native';
+
 import {Encrypt} from '../../providers/encrypt/encrypt';
 import {Configure} from '../../providers/configure/configure';
 import {Ipd} from '../../providers/ipd/ipd';
 
 import * as moment from 'moment';
 import * as _ from 'lodash';
+
+
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
 
 interface IpdResult {
   an?: any,
@@ -52,48 +62,50 @@ export class IpdDetailPage implements OnInit {
   dchstts_name: any;
   dchtype_name: any;
 
+  sessionData;
+  secureStorage: SecureStorage;
+
   constructor(
     private nav: NavController,
     private navParams: NavParams,
     private platform: Platform,
     private config: Configure,
     private encrypt: Encrypt,
-    private ipd: Ipd,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private ipd: Ipd
   ) {
-    this.localStorage = new Storage(LocalStorage);
+
     this.url = this.config.getUrl();
     this.an = this.navParams.get('an');
     this.isAndroid = this.platform.is('android');
-    console.log(this.an);
+   
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
+   
   }
 
   ngOnInit() {
 
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('', 'กรุณารอซักครุ่...')
     
-    this.localStorage.get('token')
-      .then(token => {
+    this.secureStorage.get('data')
+      .then(sessionData => {
       
         let _url = `${this.url}/api/ipd/detail`;
 
-        let params = this.encrypt.encrypt({ an: this.an });
-        this.ipd.getDetail(_url, token, params)
-          .then(result => {
-            let decryptText = this.encrypt.decrypt(result);
-            let jsonData = JSON.parse(decryptText);
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token, an: this.an };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+   
+        this.ipd.getDetail(_url, this.sessionData.memberId, _encryptedParams)
+          .then(data => {
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
 
-            // console.log(jsonData);
             let register = jsonData.register;
             this.drugs = jsonData.drugHome;
-            console.log(jsonData);
-            console.log(this.drugs);
-            // console.log(jsonData);
 
             let rowsInfo = <IpdResult>register;
             this.dchdate = rowsInfo.dchdate ? `${moment(rowsInfo.dchdate).format('DD/MM')}/${moment(rowsInfo.dchdate).get('year') + 543}` : '-';
@@ -109,16 +121,13 @@ export class IpdDetailPage implements OnInit {
             this.diag_name = rowsInfo.diag_name;
             this.pttype_name = rowsInfo.pttype_name;
 
-            loading.dismiss();
+            SpinnerDialog.hide();
+            Toast.show('เสร็จเรียบร้อย' , '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            SpinnerDialog.hide();
+            Toast.show('เกิดข้อผิดพลาด: ' + JSON.stringify(err) , '3000', 'center')
+              .subscribe(toast => { });
           });
 
       });

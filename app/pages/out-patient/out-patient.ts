@@ -11,6 +11,13 @@ import * as moment from 'moment';
 
 import {OutPatientDetailPage} from '../out-patient-detail/out-patient-detail';
 
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
 interface ServiceResult {
   vstdate?: any,
   vsttime?: any,
@@ -29,6 +36,7 @@ export class OutPatientPage implements OnInit {
   services: any;
   refresher: any;
   secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
@@ -50,20 +58,25 @@ export class OutPatientPage implements OnInit {
   }
 
   doRefresh(refresher) {
-    let secretKey = this.config.getSecretKey();
+
     let url = `${this.url}/api/opd/history`;
   
-    this.secureStorage.get('token')
-      .then(token => {
-        let _token = token;
+    this.secureStorage.get('data')
+      .then(sessionData => {
+        
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+        
         this.services = [];
 
-        this.opd.getHistory(url, _token)
+        this.opd.getHistory(url, this.sessionData.memberId, _encryptedParams)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
             let rows = <Array<any>>jsonData;
-            console.log(rows);
 
             for (let row of rows) {
               let service = <ServiceResult>row;
@@ -98,22 +111,25 @@ export class OutPatientPage implements OnInit {
   }
 
   getData() {
-    SpinnerDialog.show('ประมวลผล', 'กรุณารอซักครู่...');
+    SpinnerDialog.show('', 'กรุณารอซักครู่...');
     
-    let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/history`;
   
-    this.secureStorage.get('token')
-      .then(token => {
-        let _token = token;
+    this.secureStorage.get('data')
+      .then(sessionData => {
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+
         this.services = [];
 
-        this.opd.getHistory(url, _token)
+        this.opd.getHistory(url, this.sessionData.memberId, _encryptedParams)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
             let rows = <Array<any>>jsonData;
-            console.log(rows);
 
             for (let row of rows) {
               let service = <ServiceResult>row;

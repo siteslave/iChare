@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+import {SpinnerDialog, Toast, SecureStorage} from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -12,6 +13,14 @@ interface httpData {
   foot: any,
   eye: any
 }
+
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
 
 interface footResult {
   screen_date?: any,
@@ -49,41 +58,42 @@ export class ScreeningPage implements OnInit {
   eyeLeftResult;
 
   hasData: boolean = false;
+
+  secureStorage: SecureStorage;
+  sessionData;
   
   constructor(
     private nav: NavController,
     private platform: Platform,
     private config: Configure,
     private encrypt: Encrypt,
-    private screening: Screening,
-    private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController
+    private screening: Screening
   ) {
     this.isAndroid = this.platform.is('android');
-    this.localStorage = new Storage(LocalStorage);
     this.url = this.config.getUrl();
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
   }
 
   ngOnInit() {
 
-     let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-     loading.present();
+    SpinnerDialog.show('', 'กรุณารอซักครู่...')
     
-     let secretKey = this.config.getSecretKey();
-      let url = `${this.url}/api/screening/history`;
+    let url = `${this.url}/api/screening/history`;
   
-      this.localStorage.get('token')
-        .then(token => {
-          let _token = token;
-          this.screening.getHistory(url, _token)
+      this.secureStorage.get('data')
+        .then(sessionData => {
+          let _sessionData = JSON.parse(sessionData);
+          this.sessionData = <SessionData>_sessionData;
+          let _params = { token: this.sessionData.token };
+          let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+          
+          this.screening.getHistory(url, this.sessionData.memberId, _encryptedParams)
             .then(data => {
-              let decryptText = this.encrypt.decrypt(data);
-              let jsonData = JSON.parse(decryptText);
-
-              // console.log(jsonData);
+              let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+              let _decryptedText = <string>decryptedText;
+              let jsonData = JSON.parse(_decryptedText);
 
               let rows = <httpData>jsonData;
               let footHistory = <footResult>rows.foot;
@@ -103,16 +113,14 @@ export class ScreeningPage implements OnInit {
                 this.eyeRightResult = eyeHistory.eye_right_result;
               }
    
-              loading.dismiss();
+              SpinnerDialog.hide();
+              Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+                .subscribe(toast => { });
             }, err => {
-              loading.dismiss();
-              let toast = this.toastCtrl.create({
-                message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-                duration: 3000,
-                position: 'top'
-              });
-
-              toast.present();
+              console.log(err);
+              SpinnerDialog.hide();
+              Toast.show('เกิดข้อผิดพลาด', '3000', 'center')
+                .subscribe(toast => { });
             });
         });
         

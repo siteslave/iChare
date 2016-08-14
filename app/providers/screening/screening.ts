@@ -16,12 +16,12 @@ export class Screening {
 
   }
 
-  getHistory(url, token) {
+  getHistory(url, memberId, params) {
     // don't have the data yet
     return new Promise((resolve, reject) => {
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
-      let body = { token: token };
+      let body = { memberId: memberId, params: params };
 
       this.http.post(url, body, options)
         .map(res => res.json())

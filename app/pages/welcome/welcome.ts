@@ -72,12 +72,14 @@ export class WelcomePage implements OnInit {
     let _sessionData = { token: this.token, sessionKey: this.sessionKey, fullname: this.fullname, memberId: this.memberId };
 
     this.secureStorage.set('data', JSON.stringify(_sessionData)).then(() => { });
+
+    SpinnerDialog.hide();
     // this.secureStorage.set('sessionKey', this.sessionKey).then(() => { });
     // this.secureStorage.set('memberId', this.sessionKey).then(() => { });
   }  
 
   goHome() {
-    SpinnerDialog.show('Loading', 'Please wait..');
+    SpinnerDialog.show('', 'Please wait..');
     setTimeout(function () {
       SpinnerDialog.hide();
     }, 1000);

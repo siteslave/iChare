@@ -49,7 +49,7 @@ export class AllergyPage implements OnInit {
   }
 
   ngOnInit() {
-    SpinnerDialog.show('', 'Please wait...');
+    SpinnerDialog.show('', 'กรุณารอซักครู่...');
     
     let url = `${this.url}/api/allergy/info`;
   

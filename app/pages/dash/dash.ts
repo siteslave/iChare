@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+import { SpinnerDialog, Toast, SecureStorage } from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -12,6 +13,13 @@ import {ScreenNotePage} from '../screen-note/screen-note';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
+
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
 
 @Component({
   templateUrl: 'build/pages/dash/dash.html',
@@ -26,17 +34,19 @@ export class DashPage implements OnInit {
   weight: any;
   bmi: any;
   pulse: any;
+  secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
     private config: Configure,
     private encrypt: Encrypt,
-    private dashboard: Dashboard,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private dashboard: Dashboard
   ) { 
     this.url = this.config.getUrl();
-    this.localStorage = new Storage(LocalStorage);
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
   }
 
   goBloodPressure() {
@@ -60,38 +70,40 @@ export class DashPage implements OnInit {
   }
 
   ionViewLoaded() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('', 'กรุณารอซักครู่...')
 
     let url = `${this.url}/api/dash/screening`;
   
-    this.localStorage.get('token')
-      .then(token => {
-        this.dashboard.getScreening(url, token)
+    this.secureStorage.get('data')
+      .then(sessionData => {
+
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+        
+        this.dashboard.getScreening(url, this.sessionData.memberId, _encryptedParams)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
+
             let rows = jsonData;
-            console.log(rows);
+            
             this.bmi = numeral(rows.bmi).format('0');;
             this.bpd = rows.bpd;
             this.bps = rows.bps;
             this.weight = rows.bw;
             this.pulse = rows.pulse;
 
-            loading.dismiss();
+            SpinnerDialog.hide();
+            Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            console.log(err);
+            SpinnerDialog.hide();
+            Toast.show('เกิดข้อผิดพลาด', '3000', 'center')
+              .subscribe(toast => { });
           });
       });
   }

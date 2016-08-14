@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, NavParams, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform, NavParams } from 'ionic-angular';
+import { SpinnerDialog, SecureStorage, Toast } from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -7,6 +8,13 @@ import {Opd} from '../../providers/opd/opd';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
+
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
 
 @Component({
   templateUrl: 'build/pages/appoint-service-detail/appoint-service-detail.html',
@@ -35,6 +43,8 @@ export class AppointServiceDetailPage implements OnInit {
 
   diags: any;
   drugs: any;
+  sessionData;
+  secureStorage: SecureStorage;
 
   constructor(
     private nav: NavController,
@@ -42,37 +52,41 @@ export class AppointServiceDetailPage implements OnInit {
     private config: Configure,
     private encrypt: Encrypt,
     private opd: Opd,
-    private navParams: NavParams,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private navParams: NavParams
   ) { 
     this.url = this.config.getUrl();
-    this.localStorage = new Storage(LocalStorage);
     this.isAndroid = platform.is('android');
 
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
+    
     this.vn = this.navParams.get('vn');
   };
 
   ngOnInit() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('', 'กรุณารอซักครู่...')
     
-    let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/opd/detail`;
   
-    this.localStorage.get('token')
-      .then(token => {
-        let params = this.encrypt.encrypt({ vn: this.vn });        
-        this.opd.getDetail(url, token, params)
+    this.secureStorage.get('data')
+      .then(sessionData => {
+
+         let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+
+        let params = this.encrypt.encrypt({ vn: this.vn, token: this.sessionData.token }, this.sessionData.sessionKey);        
+        this.opd.getDetail(url, this.sessionData.memberId, params)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
+            
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
+
             let rows = jsonData;
 
-            console.log(rows);
             let screening = rows.screening;
             this.diags = rows.diag;
             this.drugs = rows.drug;
@@ -90,17 +104,11 @@ export class AppointServiceDetailPage implements OnInit {
             this.pttype_name = screening.pttype_name;
             this.department = screening.department;
            
-
-            loading.dismiss();
+            SpinnerDialog.hide();
           }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            toast.present();
+            console.log(err);
+            SpinnerDialog.hide();
+            Toast.show('เกิดข้อผิดพลาด', '3000', 'center').subscribe(() => { });
           });
       });
         

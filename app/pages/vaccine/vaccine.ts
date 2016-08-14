@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+import {SpinnerDialog, Toast, SecureStorage} from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -15,6 +16,13 @@ interface VaccineData {
   vsttime: any
 }
 
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
 @Component({
   templateUrl: 'build/pages/vaccine/vaccine.html',
   providers: [Vaccine, Configure, Encrypt]
@@ -26,44 +34,44 @@ export class VaccinePage implements OnInit {
   localStorage;
   vaccines;
   hasData: boolean = false;
+  secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
     private platform: Platform,
     private config: Configure,
     private encrypt: Encrypt,
-    private vaccine: Vaccine,
-    private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private vaccine: Vaccine
   ) {
     this.isAndroid = this.platform.is('android');
-    this.localStorage = new Storage(LocalStorage);
     this.url = this.config.getUrl();
+
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
   }
 
   ngOnInit() {
     
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();    
-    // this.nav.present(loading);
-    
-    let secretKey = this.config.getSecretKey();
+    SpinnerDialog.show('', 'กรุณารอซักครู่...')
     let url = `${this.url}/api/vaccine/history`;
   
-    this.localStorage.get('token')
-      .then(token => {
-        let _token = token;
+    this.secureStorage.get('data')
+      .then(sessionData => {
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+          
         this.vaccines = [];
-        this.vaccine.getHistory(url, _token)
+        this.vaccine.getHistory(url, this.sessionData.memberId, _encryptedParams)
           .then(data => {
-            let decryptText = this.encrypt.decrypt(data);
-            let jsonData = JSON.parse(decryptText);
-
-            console.log(jsonData);
-
+            let decryptText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+            let _decryptedText = <string>decryptedText;
+            let jsonData = JSON.parse(_decryptedText);
+            
             let rowsHistories = <Array<any>>jsonData;
 
             for (let row of rowsHistories) {
@@ -75,7 +83,6 @@ export class VaccinePage implements OnInit {
 
               this.vaccines.push(data);
             }
-            // console.log(this.vaccines.length);
             
             if (this.vaccines.length) {
               this.hasData = true;
@@ -83,21 +90,16 @@ export class VaccinePage implements OnInit {
               this.hasData = false;
             }
 
-            console.log(this.vaccines);
-            loading.dismiss();
+            SpinnerDialog.hide();
+            Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+              .subscribe(toast => { });
           }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
-
-            // this.nav.present(toast);
-            toast.present();
+            console.log(err);
+            SpinnerDialog.hide();
+            Toast.show('เกิดข้อผิดพลาด', '3000', 'center')
+              .subscribe(toast => { });
           });
       });
-        
 
   }
 
