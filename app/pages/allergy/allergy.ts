@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, LoadingController, ToastController, Storage, LocalStorage } from 'ionic-angular';
+import { NavController, LoadingController, ToastController } from 'ionic-angular';
+import {SecureStorage, SpinnerDialog, Toast} from 'ionic-native';
 
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
@@ -9,6 +10,13 @@ import * as _ from 'lodash';
 
 interface encryptData {
   data: any
+}
+
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
 }
 
 @Component({
@@ -21,6 +29,8 @@ export class AllergyPage implements OnInit {
   localStorage;
   allergies;
   hasData: boolean = false;
+  secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
@@ -30,54 +40,55 @@ export class AllergyPage implements OnInit {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
   ) {
-    this.localStorage = new Storage(LocalStorage);
+    
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
+    
     this.url = config.getUrl();
   }
 
   ngOnInit() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
-    });
-
-    loading.present();
+    SpinnerDialog.show('', 'Please wait...');
     
-    let secretKey = this.config.getSecretKey();
     let url = `${this.url}/api/allergy/info`;
   
-    this.localStorage.get('token')
-      .then(token => {
-        let _token = token;
-        this.allergies = [];
-        this.allergy.getAllergy(url, _token)
-          .then(data => {
-        // let secretKey = this.config.getSecretKey();
-        let decryptText = this.encrypt.decrypt(data);
-        let jsonData = JSON.parse(decryptText);
+    this.allergies = [];
 
-            
-            let rows = <Array<any>>jsonData;
-            for (let row of rows) {
-              this.allergies.push(row);
-            }
+    this.secureStorage.get('data')
+      .then((sessionData) => {
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        console.log(this.sessionData);
+        
+        let _params = { token: this.sessionData.token };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
 
-            if (this.allergies.length) {
-              this.hasData = true;
-            } else {
-              this.hasData = false;
-            }
+        return this.allergy.getAllergy(url, this.sessionData.memberId, _encryptedParams);
+      })
 
-            loading.dismiss();
-          }, err => {
-            loading.dismiss();
-            let toast = this.toastCtrl.create({
-              message: 'เกิดข้อผิดพลาด ' + JSON.stringify(err),
-              duration: 3000,
-              position: 'top'
-            });
+      .then(data => {
+        let decryptedText = this.encrypt.decrypt(data, this.sessionData.sessionKey);
+        let _decryptedText = <string>decryptedText;
 
-            toast.present();
-          });
+        let jsonData = JSON.parse(_decryptedText);
+        let rows = <Array<any>>jsonData;
+        for (let row of rows) {
+          this.allergies.push(row);
+        }
+
+        if (this.allergies.length) {
+          this.hasData = true;
+        } else {
+          this.hasData = false;
+        }
+
+        SpinnerDialog.hide();
+           
+      }, err => {
+        Toast.show('เกิดข้อผิดพลาด', '3000', 'center').subscribe(() => { });
       });
+    
     
   }
 

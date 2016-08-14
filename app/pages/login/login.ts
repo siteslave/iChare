@@ -93,76 +93,68 @@ export class LoginPage {
     // loading.present();
 
     SpinnerDialog.show('Login', 'Please wait...');
-    this.encrypt.encrypt({ username: this.username, password: this.password }, this.masterKey)
-      .then(encryptedParams => {
-      
-        this.login.login(url, encryptedParams)
-          .then(data => {
-            let result = <httpResult>data;
-            if (result.ok) {
+    let _encryptedParams = this.encrypt.encrypt({ username: this.username, password: this.password }, this.masterKey)
+    
+    this.login.login(url, _encryptedParams)
+      .then(data => {
+        let result = <httpResult>data;
+        if (result.ok) {
           
-              SpinnerDialog.hide();
-              // alert(JSON.stringify(result));
+          SpinnerDialog.hide();
+          // alert(JSON.stringify(result));
 
-              let push = Push.init({
-                android: {
-                  senderID: "238355712119"
-                },
-                ios: {
-                  alert: "true",
-                  badge: true,
-                  sound: 'false'
-                },
-                windows: {}
-              });
+          let push = Push.init({
+            android: {
+              senderID: "238355712119"
+            },
+            ios: {
+              alert: "true",
+              badge: true,
+              sound: 'false'
+            },
+            windows: {}
+          });
 
-              SpinnerDialog.show('Registration', 'Registering device...');
+          SpinnerDialog.show('Registration', 'Registering device...');
 
-              push.on('registration', (res) => {
-                this.encrypt.encrypt({ deviceToken: res.registrationId, memberId: result.memberId }, this.masterKey)
-                  .then(encryptedParams => {
-                                  
-                    this.login.saveDevicetoken(url, encryptedParams)
-                      .then(() => {
-                        this.encrypt.encrypt({ memberId: result.memberId }, this.masterKey)
-                          .then(_sessionParams => {
-                            return this.login.getSessionKey(url, _sessionParams);
-                          })
-                          .then(_res => {
-                            SpinnerDialog.hide();
-                            SpinnerDialog.show('Session key', 'Wating for Session Key...');
-                          });
-                      });
+          push.on('registration', (res) => {
+            let _encryptedParams = this.encrypt.encrypt({ deviceToken: res.registrationId, memberId: result.memberId }, this.masterKey)
+            this.login.saveDevicetoken(url, _encryptedParams)
+              .then(() => {
+                let _sessionParams = this.encrypt.encrypt({ memberId: result.memberId }, this.masterKey)
+                this.login.getSessionKey(url, _sessionParams)
+                  .then(_res => {
+                    SpinnerDialog.hide();
+                    SpinnerDialog.show('Session key', 'Wating for Session Key...');
                   });
               });
+          });
 
-              push.on('notification', (data) => {
+          push.on('notification', (data) => {
 
-                let additionalData = <AdditionalData>data.additionalData;
+            let additionalData = <AdditionalData>data.additionalData;
             
-                if (additionalData.key) {
-                  SpinnerDialog.hide();
-                  this.nav.setRoot(WelcomePage, { params: data.additionalData });
-
-                } else {
-                  SpinnerDialog.hide();
-                  console.log('No action for session key');
-                }
-           
-              });
-          
-            } else {
-   
-              // loading.dismiss();
+            if (additionalData.key) {
               SpinnerDialog.hide();
-              Toast.show('เกิดข้อผิดพลาด : ' + JSON.stringify(result.msg), '3000', 'center').subscribe(toast => { });
+              this.nav.setRoot(WelcomePage, { params: data.additionalData });
+
+            } else {
+              SpinnerDialog.hide();
+              console.log('No action for session key');
             }
+           
+          });
+          
+        } else {
+   
+          // loading.dismiss();
+          SpinnerDialog.hide();
+          Toast.show('เกิดข้อผิดพลาด : ' + JSON.stringify(result.msg), '3000', 'center').subscribe(toast => { });
+        }
         
 
-          });
-  
-
       });
+
 
   }
 }

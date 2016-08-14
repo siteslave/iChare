@@ -22,18 +22,15 @@ export class Encrypt {
 
   decrypt(encryptKey: any, sessionKey: string) {
 
-    return new Promise((resolve, reject) => {
-      let bytes = cryptojs.AES.decrypt(encryptKey.toString(), sessionKey);
-      let decrypt = bytes.toString(cryptojs.enc.Utf8);
-      resolve(decrypt);
-    })
+    let bytes = cryptojs.AES.decrypt(encryptKey.toString(), sessionKey);
+    let decrypt = bytes.toString(cryptojs.enc.Utf8);
+
+    return decrypt;
   }
 
   encrypt(data: Object, sessionKey: string) {
-    return new Promise((resolve, reject) => {
-      let encrypted = cryptojs.AES.encrypt(JSON.stringify(data), sessionKey);
-      resolve(encrypted.toString());
-    })
+    let encrypted = cryptojs.AES.encrypt(JSON.stringify(data), sessionKey);
+    return encrypted.toString();
   }
 
 }
