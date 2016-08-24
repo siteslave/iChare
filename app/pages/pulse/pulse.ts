@@ -98,12 +98,12 @@ export class PulsePage implements OnInit {
             this.setGraph(graphData, graphCategories);
             
             SpinnerDialog.hide();
-            Toast.show('เสร็จเรียบร้อย', '3000', 'center')
+            Toast.show('เสร็จเรียบร้อย', '2000', 'center')
               .subscribe(toast => { });
           }, err => {
             console.log(err);
             SpinnerDialog.hide();
-            Toast.show('เกิดข้อผิดพลาด', '3000', 'center')
+            Toast.show('เกิดข้อผิดพลาด', '2000', 'center')
               .subscribe(toast => { });
           });
       });

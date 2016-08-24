@@ -1,17 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import {ModalController, Platform, NavController, NavParams, ViewController, LocalStorage, Storage} from 'ionic-angular';
+import {ModalController, Platform, NavController, NavParams, ViewController } from 'ionic-angular';
 
-import { BarcodeScanner } from 'ionic-native';
+import { BarcodeScanner, SpinnerDialog, Toast, SecureStorage } from 'ionic-native';
 
 import {Settings} from '../../providers/settings/settings';
 import {Configure} from '../../providers/configure/configure';
 import {Encrypt} from '../../providers/encrypt/encrypt';
-/*
-  Generated class for the BarcodePage page.
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
+interface SessionData {
+  sessionKey?: any,
+  token?: any,
+  memberId?: any,
+  fullname?: any
+}
+
+interface HttpResult {
+  ok?: any,
+  img?: any,
+  msg?: any
+}
+
 @Component({
   templateUrl: 'build/pages/barcode/barcode.html',
   providers: [Configure, Settings, Encrypt]
@@ -22,7 +30,8 @@ export class BarcodePage implements OnInit {
   token: any;
   hashKey: any;
   barcode: any;
-  localStorage: any;
+  secureStorage: SecureStorage;
+  sessionData;
 
   constructor(
     private nav: NavController,
@@ -34,33 +43,37 @@ export class BarcodePage implements OnInit {
     private navParams: NavParams
   ) {
 
-    this.localStorage = new Storage(LocalStorage);
-    // console.log(this.params);
+    this.secureStorage = new SecureStorage();
+    this.secureStorage.create('iChare')
+      .then(() => { });
     
   }
 
   ngOnInit() {
 
+    SpinnerDialog.show('', 'กรุณารอซักครู่...');
+    
     this.hashKey = this.navParams.get('hashKey'); 
 
     this.url = this.config.getUrl();
     // console.log(this.hashKey);
-    this.localStorage.get('token')
-      .then(token => {
-        this.token = token;
+    this.secureStorage.get('data')
+      .then(sessionData => {
+        let _sessionData = JSON.parse(sessionData);
+        this.sessionData = <SessionData>_sessionData;
+        let _params = { token: this.sessionData.token, hashKey: this.hashKey };
+        let _encryptedParams = this.encrypt.encrypt(_params, this.sessionData.sessionKey);
+        
         let url = `${this.url}/api/patient/get-barcode`;
-        console.log(url);
-        let params = this.encrypt.encrypt({ hashKey: this.hashKey });
-        return this.settings.getBarCode(url, this.token, params);
+      
+        return this.settings.getBarCode(url, this.sessionData.memberId, _encryptedParams);
       })
-      .then(data => {
-        console.log(data);
-        if (data.ok) {
-          this.barcode = data.img;
-          // alert(this.barcode);
-        } else {
-          alert(JSON.stringify(data.msg));
-        }
+      .then(img => {
+        this.barcode = img;
+        SpinnerDialog.hide();
+      }, err => {
+        console.log(err);
+        SpinnerDialog.hide();
       });
     
   }

@@ -87,7 +87,7 @@
         <p>เกี่ยวกับโปรแกรม</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
       </button>
-      <button ion-item teal>
+      <button ion-item teal (click)="goLogout()">
         <ion-icon large item-left name="log-out"></ion-icon>
         <h2>Logout</h2>
         <p>ออกจากโปรแกรม</p>

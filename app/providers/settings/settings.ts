@@ -2,12 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 
-/*
-  Generated class for the Settings provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular 2 DI.
-*/
 @Injectable()
 export class Settings {
   patients: any;
@@ -17,17 +11,28 @@ export class Settings {
     this.patients = null;
   }
 
-  getMemberPatients(url) {
+  getMemberPatients(url, memberId, params) {
     this.url = url;
     return new Promise((resolve, reject) => {
 
-      this.http.get(url)
+      let headers = new Headers({ 'Content-Type': 'application/json' });
+      let options = new RequestOptions({ headers: headers });
+
+      let body = { memberId: memberId, params: params };
+
+      this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data), error => reject(error))
+        .subscribe(data => {
+          if (data.ok) {
+            resolve(data.data);
+          } else {
+            reject(data.msg);
+          }
+        }, err => reject(err));
     })
   }
 
-  setDefault(url, data) {
+  setDefault(url, memberId, params) {
     this.url = url;
 
     return new Promise((resolve, reject) => {
@@ -35,7 +40,7 @@ export class Settings {
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
 
-      let body = { data: data };
+      let body = { memberId: memberId, params: params };
 
       this.http.post(url, body, options)
         .map(res => res.json())
@@ -43,7 +48,7 @@ export class Settings {
     });
   }
 
-  getBarCode(url, token, params) {
+  getBarCode(url, memberId, params) {
     this.url = url;
 
     return new Promise((resolve, reject) => {
@@ -51,11 +56,17 @@ export class Settings {
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
 
-      let body = { token: token, params: params };
+      let body = { memberId: memberId, params: params };
 
       this.http.post(url, body, options)
         .map(res => res.json())
-        .subscribe(data => resolve(data), error => reject(error))
+        .subscribe(data => {
+          if (data.ok) {
+            resolve(data.img);
+          } else {
+            reject(data.msg);
+          }
+        }, err => reject(err));
     });
   }
 
@@ -81,45 +92,45 @@ export class Settings {
     })
   }
 
-  setAlert(url, token, type, status) {
+  setAlert(url, memberId, params) {
 
     return new Promise((resolve, reject) => {
 
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
-      let body = { token: token, type: type, status: status };
+      let body = { memberId: memberId, params: params };
 
-      
       this.http.post(url, body, options)
         .map(res => res.json())
         .subscribe(data => {
           if (data.ok) {
             resolve();
           } else {
-            resolve(data.msg);
+            reject(data.msg);
           }
         }, error => reject(error))
     })
   }
 
-  getAlertSetting(url, token) {
+  getAlertSetting(url, memberId, params) {
 
     return new Promise((resolve, reject) => {
 
       let headers = new Headers({ 'Content-Type': 'application/json' });
       let options = new RequestOptions({ headers: headers });
 
-      let body = { token: token };
+      let body = { memberId: memberId, params: params };
 
       this.http.post(url, body, options)
         .map(res => res.json())
         .subscribe(data => {
           if (data.ok) {
-            resolve(data.alert);
+            resolve(data.data);
           } else {
-            resolve(data.msg);
+            reject(data.msg);
           }
-        }, error => reject(error))
+        }, err => reject(err));
+      
     })
   }
 

@@ -27,7 +27,8 @@
         รายการนัดหมาย
       </ion-item-divider>
       <button ion-item *ngFor="let item of appointments" (click)="goAppointDetail(item.oapp_id)">
-        <h2>{{item.nextdate}} - {{item.nexttime}} น.</h2>
+        <h2>{{item.ptname}}</h2>
+        <p>วันที่ {{item.nextdate}} เวลา {{item.nexttime}} น.</p>
         <p>แผนก {{item.department}}</p>
         <p>คลินิก {{item.clinic_name}}</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
@@ -39,7 +40,7 @@
       </ion-item-divider>
       <button ion-item *ngFor="let item of services" (click)="goAppointServiceDetail(item.vn)">
         <h2>{{item.ptname}}</h2>
-        <p>{{item.vstdate}} - {{item.vsttime}} น.</p>
+        <p>วันที่ {{item.vstdate}} เวลา {{item.vsttime}} น.</p>
         <p>อาการ {{item.cc}}</p>
         <ion-icon *ngIf="isAndroid" item-right name="arrow-forward" light></ion-icon>
       </button>

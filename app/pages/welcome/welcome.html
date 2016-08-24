@@ -1,7 +1,7 @@
 
 <ion-header>
 
-  <ion-navbar>
+  <ion-navbar primary>
     <ion-title>Welcome</ion-title>
   </ion-navbar>
 
@@ -9,13 +9,13 @@
 
 
 <ion-content padding>
-
-  Hello, {{ fullname }}
+<!--
+  Hello, {{ fullname }}-->
 
 <div padding style="text-align: center;">
-  <button secondary round (click)="goHome()">
-    <ion-icon name="send"></ion-icon>
-    Welcome to iChare
+  <button secondary large round (click)="goHome()">
+    <!--<ion-icon name="send"></ion-icon>-->
+    ยินดีต้อนรับ, {{ fullname }}
   </button>
 </div>
 

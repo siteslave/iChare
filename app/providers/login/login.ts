@@ -36,6 +36,30 @@ export class Login {
     })
   }
 
+  logout(url, memberId, params) {
+    this.url = url;
+
+    return new Promise((resolve, reject) => {
+
+      let headers = new Headers({ 'Content-Type': 'application/json' });
+      let options = new RequestOptions({ headers: headers });
+      
+      let body = { memberId: memberId, params: params };
+
+      let _url = `${this.url}/api/login/logout`;
+      
+      this.http.post(_url, body, options)
+        .map(res => res.json())
+        .subscribe(data => {
+          if (data.ok) {
+            resolve();
+          } else {
+            reject(data.msg);
+          }
+        }, error => reject(error))
+    });
+  }
+
   saveDevicetoken(url, params) {
     this.url = url;
 

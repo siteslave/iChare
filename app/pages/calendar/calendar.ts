@@ -25,7 +25,8 @@ interface AppointData {
   nexttime?: any,
   department?: any,
   clinic_name?: any,
-  oapp_id?: any
+  oapp_id?: any,
+  ptname?: any
 }
 
 interface ServiceData {
@@ -102,9 +103,9 @@ export class CalendarPage {
             let _startDate = new Date(moment(trueDate).format());
             // console.log(_startDate);
 
-            Calendar.deleteEvent('นัดหมายโรงพยาบาล', v.department, 'คลินิก: ' + v.clinic_name, _startDate, _startDate)
+            Calendar.deleteEvent('นัดหมายโรงพยาบาล ['+ v.ptname +']', v.department, 'คลินิก: ' + v.clinic_name, _startDate, _startDate)
               .then(result => {
-                return Calendar.createEventWithOptions('นัดหมายโรงพยาบาล', v.department, 'คลินิก: ' + v.clinic_name, _startDate, _startDate, this.calendarOption);
+                return Calendar.createEventWithOptions('นัดหมายโรงพยาบาล ['+ v.ptname +']', v.department, 'คลินิก: ' + v.clinic_name, _startDate, _startDate, this.calendarOption);
               })
               .then(result => {
                 Toast.show("เสร็จเรียบร้อย", '3000', 'center').subscribe(toast => { });
@@ -150,11 +151,12 @@ export class CalendarPage {
             let jsonData = JSON.parse(_decryptedText);
 
             let rows = <Array<any>>jsonData;
-            // console.log(rows);
+            console.log(rows);
             
             for (let row of rows) {
               let appoint = <AppointData>row;
-              console.log(row);
+              // console.log(row);
+              appoint.ptname = row.ptname;
               appoint.trueNextDate = row.nextdate;
               appoint.nextdate = `${moment(row.nextdate).format('D/M')}/${moment(row.nextdate).get('year') + 543}`;
               appoint.nexttime = moment(row.nexttime, 'HH:mm:ss').format('HH:mm');
@@ -163,6 +165,8 @@ export class CalendarPage {
               appoint.oapp_id = row.oapp_id;
               this.appointments.push(appoint);
             }
+
+            console.log(this.appointments);
 
             let _url = `${this.url}/api/appointment/lastvisit`;
             return this.appointment.getLastVisit(_url, this.sessionData.memberId, _encryptedParams);
